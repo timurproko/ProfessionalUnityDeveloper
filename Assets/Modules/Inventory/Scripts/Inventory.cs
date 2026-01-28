@@ -1,94 +1,137 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Text;
 using UnityEngine;
 
 namespace Modules.Inventories
 {
-    public class Inventory : IEnumerable<Item>
+    public partial class Inventory : IEnumerable<Item>
     {
         public event Action<Item, Vector2Int> OnAdded;
         public event Action<Item, Vector2Int> OnRemoved;
         public event Action<Item, Vector2Int> OnMoved;
         public event Action OnCleared;
 
-        public int Width => throw new NotImplementedException();
-        public int Height => throw new NotImplementedException();
-        public int Count => throw new NotImplementedException();
+        public int Width => _width;
+        public int Height => _height;
+        public int Count => _count;
+
+        private readonly int[] _slots;
+        private readonly int[] _keys;
+        private readonly int[] _values;
+        private readonly Item[] _items;
+
+        private readonly int _width;
+        private readonly int _height;
+
+        private int _indexSize;
+        private int _count;
 
         public Inventory(int width, int height)
         {
-            throw new NotImplementedException();
+            ThrowIfSizeZero(width, height);
+
+            _width = width;
+            _height = height;
+
+            int cellCount = width * height;
+
+            _slots = new int[cellCount];
+            Array.Fill(_slots, -1);
+
+            _keys = new int[cellCount];
+            _values = new int[cellCount];
+            _items = new Item[cellCount];
         }
 
         public Inventory(
             int width,
             int height,
             params KeyValuePair<Item, Vector2Int>[] items
-        )
+        ) : this(width, height)
         {
-            throw new NotImplementedException();
+            ThrowIfNull(items);
+
+            foreach (var item in items)
+                AddItem(item.Key, item.Value);
         }
 
         public Inventory(
             int width,
             int height,
             params Item[] items
-        )
+        ) : this(width, height)
         {
-            throw new NotImplementedException();
+            ThrowIfNull(items);
+
+            foreach (var item in items)
+                AddItem(item);
         }
 
         public Inventory(
             int width,
             int height,
             IEnumerable<KeyValuePair<Item, Vector2Int>> items
-        )
+        ) : this(width, height)
         {
-            throw new NotImplementedException();
+            ThrowIfNull(items);
+
+            foreach (var item in items)
+                AddItem(item.Key, item.Value);
         }
 
         public Inventory(
             int width,
             int height,
             IEnumerable<Item> items
-        )
+        ) : this(width, height)
         {
-            throw new NotImplementedException();
+            ThrowIfNull(items);
+
+            foreach (var item in items)
+                AddItem(item);
         }
 
         /// <summary>
         /// Creates new inventory 
         /// </summary>
-        public Inventory(Inventory inventory)
+        public Inventory(Inventory other) : this(other._width, other._height)
         {
-            throw new NotImplementedException();
+            ThrowIfNull(other);
+            
+            Array.Copy(other._slots, _slots, other._slots.Length);
+            Array.Copy(other._keys, _keys, other._keys.Length);
+            Array.Copy(other._values, _values, other._values.Length);
+            Array.Copy(other._items, _items, other._items.Length);
+            
+            _indexSize = other._indexSize;
+            _count = other._count;
         }
 
         /// <summary>
-        /// Checks for adding an item on a specified position
+        /// Adds an item on a free position
         /// </summary>
-        public bool CanAddItem(Item item, Vector2Int position)
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool CanAddItem(Item item, int startX, int startY)
-        {
-            throw new NotImplementedException();
-        }
+        public bool AddItem(Item item, Vector2Int pos) => AddItem(item, pos.x, pos.y);
 
         /// <summary>
         /// Adds an item on a specified position
         /// </summary>
-        public bool AddItem(Item item, Vector2Int position)
-        {
-            throw new NotImplementedException();
-        }
+        public bool AddItem(Item item) => AddItem(item, null, null);
+        
+        public bool AddItem(Item item, int x, int y) => AddItem(item, (int?)x, y);
 
-        public bool AddItem(Item item, int startX, int startY)
+        private bool AddItem(Item item, int? x, int? y)
         {
-            throw new NotImplementedException();
+            if (item != null)
+                ThrowIfSizeZero(item.Size.x, item.Size.y);
+
+            if (TryGetPlacement(item, x, y, out var finalPos))
+            {
+                PlaceItem(item, finalPos.x, finalPos.y);
+                return true;
+            }
+            return false;
         }
 
         /// <summary>
@@ -96,38 +139,46 @@ namespace Modules.Inventories
         /// </summary>
         public bool CanAddItem(Item item)
         {
-            throw new NotImplementedException();
+            if (item != null)
+                ThrowIfSizeZero(item.Size.x, item.Size.y);
+            return TryGetPlacement(item, null, null, out _);
         }
 
         /// <summary>
-        /// Adds an item on a free position
+        /// Checks for adding an item on a specified position
         /// </summary>
-        public bool AddItem(Item item)
+        public bool CanAddItem(Item item, Vector2Int pos) => CanAddItem(item, pos.x, pos.y);
+        
+        public bool CanAddItem(Item item, int x, int y)
         {
-            throw new NotImplementedException();
+            if (item != null)
+                ThrowIfSizeZero(item.Size.x, item.Size.y);
+            return TryGetPlacement(item, x, y, out _);
         }
-
+        
         /// <summary>
         /// Returns a free position for a specified item
         /// </summary>
-        public bool FindFreePosition(Item item, out Vector2Int position)
+        public bool FindFreePosition(Item item, out Vector2Int pos) => FindFreePosition(item.Size.x, item.Size.y, out pos);
+        
+        public bool FindFreePosition(Vector2Int size, out Vector2Int pos) => FindFreePosition(size.x, size.y, out pos);
+        
+        public bool FindFreePosition(int sizeX, int sizeY, out Vector2Int pos)
         {
-            throw new NotImplementedException();
-        }
+            ThrowIfSizeZero(sizeX, sizeY);
 
-        public bool FindFreePosition(Vector2Int size, out Vector2Int position)
-        {
-            throw new NotImplementedException();
-        }
+            for (int y = 0; y <= _height - sizeY; y++)
+            for (int x = 0; x <= _width - sizeX; x++)
+            {
+                if (IsFreeSpace(x, y, sizeX, sizeY))
+                {
+                    pos = new Vector2Int(x, y);
+                    return true;
+                }
+            }
 
-        public bool FindFreePosition(int sizeX, int sizeY, out Vector2Int position)
-        {
-            throw new NotImplementedException();
-        }
-
-        private bool IsFreeSpace(int startX, int startY, int endX, int endY)
-        {
-            throw new NotImplementedException();
+            pos = default;
+            return false;
         }
 
         /// <summary>
@@ -135,69 +186,59 @@ namespace Modules.Inventories
         /// </summary>
         public bool Contains(Item item)
         {
-            throw new NotImplementedException();
+            if (item == null) return false;
+            return TryGetItemById(item.Id, out _);
         }
 
         /// <summary>
         /// Checks if the specified position is occupied
         /// </summary>
-        public bool IsOccupied(Vector2Int position)
-        {
-            throw new NotImplementedException();
-        }
-
+        public bool IsOccupied(Vector2Int pos) => IsOccupied(pos.x, pos.y);
+        
         public bool IsOccupied(int x, int y)
         {
-            throw new NotImplementedException();
+            if (!InBounds(x, y)) return false;
+            return _slots[ToIndex(x, y)] != -1;
         }
-
+        
         /// <summary>
         /// Checks if the specified position is free
         /// </summary>
-        public bool IsFree(Vector2Int position)
-        {
-            throw new NotImplementedException();
-        }
-
+        public bool IsFree(Vector2Int pos) => IsFree(pos.x, pos.y);
+        
         public bool IsFree(int x, int y)
         {
-            throw new NotImplementedException();
-        }
-
-        /// <summary>
-        /// Removes specified item
-        /// </summary>
-        public bool RemoveItem(Item item)
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool RemoveItem(Item item, out Vector2Int position)
-        {
-            throw new NotImplementedException();
+            if (!InBounds(x, y)) return false;
+            return _slots[ToIndex(x, y)] == -1;
         }
 
         /// <summary>
         /// Returns an item at specified position 
         /// </summary>
-        public Item GetItem(Vector2Int position)
-        {
-            throw new NotImplementedException();
-        }
-
+        public Item GetItem(Vector2Int pos) => GetItem(pos.x, pos.y);
+        
         public Item GetItem(int x, int y)
         {
-            throw new NotImplementedException();
-        }
+            ThrowIfPosNotFitsInventory(x, y);
 
-        public bool TryGetItem(Vector2Int position, out Item item)
-        {
-            throw new NotImplementedException();
-        }
+            if (!InBounds(x, y))
+                return null;
 
+            int id = _slots[ToIndex(x, y)];
+            return TryGetItemById(id, out var item) ? item : null;
+        }
+        
+        public bool TryGetItem(Vector2Int pos, out Item item) => TryGetItem(pos.x, pos.y, out item);
+        
         public bool TryGetItem(int x, int y, out Item item)
         {
-            throw new NotImplementedException();
+            item = null;
+
+            if (!InBounds(x, y))
+                return false;
+
+            int id = _slots[ToIndex(x, y)];
+            return TryGetItemById(id, out item);
         }
 
         /// <summary>
@@ -205,20 +246,46 @@ namespace Modules.Inventories
         /// </summary>
         public Vector2Int[] GetPositions(Item item)
         {
-            throw new NotImplementedException();
+            ThrowIfNullReference(item);
+
+            if (!TryGetPositions(item, out var pos))
+                throw new KeyNotFoundException("Item not found in inventory.");
+
+            return pos;
         }
 
-        public bool TryGetPositions(Item item, out Vector2Int[] positions)
+        public bool TryGetPositions(Item item, out Vector2Int[] pos)
         {
-            throw new NotImplementedException();
-        }
+            pos = null;
 
-        /// <summary>
-        /// Clears all items 
-        /// </summary>
-        public void Clear()
-        {
-            throw new NotImplementedException();
+            if (item == null)
+                return false;
+
+            if (!TryGetItemById(item.Id, out _))
+                return false;
+
+            int id = item.Id;
+
+            int count = 0;
+            for (int i = 0; i < _slots.Length; i++)
+                if (_slots[i] == id)
+                    count++;
+
+            if (count == 0)
+                return false;
+
+            var result = new Vector2Int[count];
+            int k = 0;
+
+            for (int x = 0; x < _width; x++)
+            for (int y = 0; y < _height; y++)
+            {
+                if (_slots[ToIndex(x, y)] == id)
+                    result[k++] = new Vector2Int(x, y);
+            }
+
+            pos = result;
+            return true;
         }
 
         /// <summary>
@@ -226,33 +293,48 @@ namespace Modules.Inventories
         /// </summary>
         public int GetItemCount(string name)
         {
-            throw new NotImplementedException();
+            int count = 0;
+
+            for (int i = 0; i < _indexSize; i++)
+            {
+                if (string.Equals(_items[i].Name, name))
+                    count++;
+            }
+
+            return count;
         }
 
-        public bool MoveItem(Item item, Vector2Int position)
+        public bool MoveItem(Item item, Vector2Int pos)
         {
-            throw new NotImplementedException();
-        }
+            ThrowIfNull(item);
+            
+            if (item == null)
+                return false;
 
-        /// <summary>
-        /// Rearranges an inventory space with max free slots 
-        /// </summary>
-        public void OptimizeSpace()
-        {
-            throw new NotImplementedException();
-        }
+            if (!TryGetItemById(item.Id, out _))
+                return false;
 
-        /// <summary>
-        /// Iterates by all items 
-        /// </summary>
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            throw new NotImplementedException();
-        }
+            int w = item.Size.x;
+            int h = item.Size.y;
 
-        public IEnumerator<Item> GetEnumerator()
-        {
-            throw new NotImplementedException();
+            if (!IsFits(pos.x, pos.y, w, h))
+                return false;
+
+            ClearItemSlots(item.Id);
+
+            bool canPlace = CanPlaceAt(pos.x, pos.y, w, h);
+
+            if (!canPlace)
+            {
+                PlaceItem(item, ToPos(_values[FindItemIndex(item.Id)]));
+                return false;
+            }
+
+            UpdateItemRoot(item.Id, ToIndex(pos.x, pos.y));
+            SetSlots(item.Id, pos.x, pos.y, w, h);
+
+            OnMoved?.Invoke(item, pos);
+            return true;
         }
 
         /// <summary>
@@ -260,7 +342,106 @@ namespace Modules.Inventories
         /// </summary>
         public void CopyTo(Item[,] matrix)
         {
-            throw new NotImplementedException();
+            ThrowIfMatrixNotFits(matrix);
+
+            for (int y = 0; y < _height; y++)
+            {
+                for (int x = 0; x < _width; x++)
+                {
+                    int index = ToIndex(x, y);
+                    int itemId = _slots[index];
+
+                    matrix[x, y] = TryGetItemById(itemId, out var item)
+                        ? item
+                        : null;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Removes specified item
+        /// </summary>
+        public bool RemoveItem(Item item) => RemoveItem(item, out _);
+
+        public bool RemoveItem(Item item, out Vector2Int pos)
+        {
+            pos = default;
+
+            if (item == null)
+                return false;
+
+            int i = FindItemIndex(item.Id);
+            if (i >= _indexSize || _keys[i] != item.Id)
+                return false;
+
+            pos = ToPos(_values[i]);
+            ClearItemSlots(item.Id);
+            RemoveIndexAt(i);
+
+            _count--;
+            OnRemoved?.Invoke(item, pos);
+            return true;
+        }
+
+        /// <summary>
+        /// Clears all items 
+        /// </summary>
+        public void Clear()
+        {
+            if (_count == 0) return;
+
+            Array.Fill(_slots, -1);
+
+            _indexSize = 0;
+            _count = 0;
+
+            OnCleared?.Invoke();
+        }
+
+        /// <summary>
+        /// Rearranges an inventory space with max free slots 
+        /// </summary>
+        public void OptimizeSpace()
+        {
+            if (_indexSize <= 1)
+                return;
+
+            int n = _indexSize;
+            var items = new Item[n];
+            for (int i = 0; i < n; i++)
+                items[i] = _items[i];
+
+            Array.Sort(items, Compare);
+
+            Array.Fill(_slots, -1);
+            _indexSize = 0;
+            _count = 0;
+
+            for (int i = 0; i < items.Length; i++)
+            {
+                var item = items[i];
+                if (item == null)
+                    continue;
+
+                if (!FindFreePosition(item.Size.x, item.Size.y, out var pos))
+                    throw new InvalidOperationException($"OptimizeSpace failed: item '{item.Name}' (id={item.Id}) does not fit.");
+
+                PlaceItem(item, pos.x, pos.y);
+            }
+        }
+
+        /// <summary>
+        /// Iterates by all items 
+        /// </summary>
+        public IEnumerator<Item> GetEnumerator()
+        {
+            for (int i = 0; i < _indexSize; i++)
+                yield return _items[i];
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
         }
 
         /// <summary>
@@ -268,7 +449,33 @@ namespace Modules.Inventories
         /// </summary>
         public override string ToString()
         {
-            throw new NotImplementedException();
+            var sb = new StringBuilder();
+
+            for (int y = 0; y < _height; y++)
+            {
+                for (int x = 0; x < _width; x++)
+                {
+                    int id = _slots[ToIndex(x, y)];
+
+                    if (TryGetItemById(id, out var item))
+                    {
+                        char c = string.IsNullOrEmpty(item.Name)
+                            ? '?'
+                            : item.Name[0];
+
+                        sb.Append(c);
+                    }
+                    else
+                    {
+                        sb.Append('.');
+                    }
+                }
+
+                if (y < _height - 1)
+                    sb.AppendLine();
+            }
+
+            return sb.ToString();
         }
     }
 }
