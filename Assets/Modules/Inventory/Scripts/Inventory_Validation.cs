@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 
 namespace Modules.Inventories
 {
@@ -8,7 +8,7 @@ namespace Modules.Inventories
         {
             return value ?? throw new ArgumentNullException(nameof(value));
         }
-        
+
         private static T ThrowIfNullReference<T>(T value) where T : class
         {
             return value ?? throw new NullReferenceException(nameof(value));

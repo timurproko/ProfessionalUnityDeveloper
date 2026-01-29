@@ -61,7 +61,7 @@ namespace Modules.Inventories
                 }
             }
         }
-        
+
         private int ToIndex(int x, int y)
         {
             return y * _width + x;
@@ -80,9 +80,9 @@ namespace Modules.Inventories
         private bool IsFreeSpace(int startX, int startY, int w, int h)
         {
             for (int y = startY; y < startY + h; y++)
-            for (int x = startX; x < startX + w; x++)
-                if (_slots[ToIndex(x, y)] != -1)
-                    return false;
+                for (int x = startX; x < startX + w; x++)
+                    if (_slots[ToIndex(x, y)] != -1)
+                        return false;
 
             return true;
         }
@@ -99,11 +99,16 @@ namespace Modules.Inventories
                    startY + h <= _height;
         }
 
+        private bool TryGetPlacement(Item item, out Vector2Int position)
+        {
+            return TryGetPlacement(item, null, null, out position);
+        }
+
         private bool TryGetPlacement(Item item, int? startX, int? startY, out Vector2Int position)
         {
             position = Vector2Int.zero;
 
-            if (item == null || Contains(item))
+            if (item == null || TryGetItemById(item.Id, out _))
                 return false;
 
             if (!TryGetSize(item, out int w, out int h))
@@ -118,7 +123,36 @@ namespace Modules.Inventories
                 return true;
             }
 
-            return FindFreePosition(w, h, out position);
+            return ScanForFreeRect(w, h, out position);
+        }
+
+        private bool TryAdd(Item item)
+        {
+            if (TryGetItemById(item.Id, out _)) return false;
+
+            int w = item.Size.x;
+            int h = item.Size.y;
+
+            if (!ScanForFreeRect(w, h, out var pos))
+                return false;
+
+            PlaceItem(item, pos.x, pos.y);
+            return true;
+        }
+
+        private bool ScanForFreeRect(int w, int h, out Vector2Int pos)
+        {
+            for (int y = 0; y <= _height - h; y++)
+                for (int x = 0; x <= _width - w; x++)
+                {
+                    if (IsFreeSpace(x, y, w, h))
+                    {
+                        pos = new Vector2Int(x, y);
+                        return true;
+                    }
+                }
+            pos = default;
+            return false;
         }
 
         private void ShiftRight(int fromIndex)

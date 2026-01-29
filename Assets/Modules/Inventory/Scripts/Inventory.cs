@@ -112,19 +112,24 @@ namespace Modules.Inventories
         /// <summary>
         /// Adds an item on a free position
         /// </summary>
-        public bool AddItem(Item item, Vector2Int pos) => AddItem(item, pos.x, pos.y);
+        public bool AddItem(Item item)
+        {
+            if (item == null) return false;
+
+            ThrowIfSizeZero(item.Size.x, item.Size.y);
+            return TryAdd(item);
+        }
 
         /// <summary>
         /// Adds an item on a specified position
         /// </summary>
-        public bool AddItem(Item item) => AddItem(item, null, null);
+        public bool AddItem(Item item, Vector2Int pos) => AddItem(item, pos.x, pos.y);
         
-        public bool AddItem(Item item, int x, int y) => AddItem(item, (int?)x, y);
-
-        private bool AddItem(Item item, int? x, int? y)
+        public bool AddItem(Item item, int x, int y)
         {
-            if (item != null)
-                ThrowIfSizeZero(item.Size.x, item.Size.y);
+            if (item == null) return false;
+
+            ThrowIfSizeZero(item.Size.x, item.Size.y);
 
             if (TryGetPlacement(item, x, y, out var finalPos))
             {
@@ -139,9 +144,10 @@ namespace Modules.Inventories
         /// </summary>
         public bool CanAddItem(Item item)
         {
-            if (item != null)
-                ThrowIfSizeZero(item.Size.x, item.Size.y);
-            return TryGetPlacement(item, null, null, out _);
+            if (item == null) return false;
+
+            ThrowIfSizeZero(item.Size.x, item.Size.y);
+            return TryGetPlacement(item, out _);
         }
 
         /// <summary>
@@ -151,34 +157,27 @@ namespace Modules.Inventories
         
         public bool CanAddItem(Item item, int x, int y)
         {
-            if (item != null)
-                ThrowIfSizeZero(item.Size.x, item.Size.y);
+            if (item == null) return false;
+
+            ThrowIfSizeZero(item.Size.x, item.Size.y);
             return TryGetPlacement(item, x, y, out _);
         }
         
         /// <summary>
         /// Returns a free position for a specified item
         /// </summary>
-        public bool FindFreePosition(Item item, out Vector2Int pos) => FindFreePosition(item.Size.x, item.Size.y, out pos);
+        public bool FindFreePosition(Item item, out Vector2Int pos)
+        {
+            if (item == null) { pos = default; return false; }
+            return FindFreePosition(item.Size.x, item.Size.y, out pos);
+        }
         
         public bool FindFreePosition(Vector2Int size, out Vector2Int pos) => FindFreePosition(size.x, size.y, out pos);
         
         public bool FindFreePosition(int sizeX, int sizeY, out Vector2Int pos)
         {
             ThrowIfSizeZero(sizeX, sizeY);
-
-            for (int y = 0; y <= _height - sizeY; y++)
-            for (int x = 0; x <= _width - sizeX; x++)
-            {
-                if (IsFreeSpace(x, y, sizeX, sizeY))
-                {
-                    pos = new Vector2Int(x, y);
-                    return true;
-                }
-            }
-
-            pos = default;
-            return false;
+            return ScanForFreeRect(sizeX, sizeY, out pos);
         }
 
         /// <summary>
@@ -221,9 +220,6 @@ namespace Modules.Inventories
         {
             ThrowIfPosNotFitsInventory(x, y);
 
-            if (!InBounds(x, y))
-                return null;
-
             int id = _slots[ToIndex(x, y)];
             return TryGetItemById(id, out var item) ? item : null;
         }
@@ -257,9 +253,7 @@ namespace Modules.Inventories
         public bool TryGetPositions(Item item, out Vector2Int[] pos)
         {
             pos = null;
-
-            if (item == null)
-                return false;
+            if (item == null) return false;
 
             if (!TryGetItemById(item.Id, out _))
                 return false;
@@ -307,9 +301,6 @@ namespace Modules.Inventories
         public bool MoveItem(Item item, Vector2Int pos)
         {
             ThrowIfNull(item);
-            
-            if (item == null)
-                return false;
 
             if (!TryGetItemById(item.Id, out _))
                 return false;
@@ -366,9 +357,7 @@ namespace Modules.Inventories
         public bool RemoveItem(Item item, out Vector2Int pos)
         {
             pos = default;
-
-            if (item == null)
-                return false;
+            if (item == null) return false;
 
             int i = FindItemIndex(item.Id);
             if (i >= _indexSize || _keys[i] != item.Id)
