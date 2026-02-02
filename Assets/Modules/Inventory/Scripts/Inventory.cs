@@ -1,4 +1,5 @@
 using System;
+using System.Buffers;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
@@ -99,12 +100,14 @@ namespace Modules.Inventories
         public Inventory(Inventory other) : this(other._width, other._height)
         {
             ThrowIfNull(other);
-            
+
+
             Array.Copy(other._slots, _slots, other._slots.Length);
             Array.Copy(other._keys, _keys, other._keys.Length);
             Array.Copy(other._values, _values, other._values.Length);
             Array.Copy(other._items, _items, other._items.Length);
-            
+
+
             _indexSize = other._indexSize;
             _count = other._count;
         }
@@ -124,7 +127,8 @@ namespace Modules.Inventories
         /// Adds an item on a specified position
         /// </summary>
         public bool AddItem(Item item, Vector2Int pos) => AddItem(item, pos.x, pos.y);
-        
+
+
         public bool AddItem(Item item, int x, int y)
         {
             if (item == null) return false;
@@ -154,7 +158,8 @@ namespace Modules.Inventories
         /// Checks for adding an item on a specified position
         /// </summary>
         public bool CanAddItem(Item item, Vector2Int pos) => CanAddItem(item, pos.x, pos.y);
-        
+
+
         public bool CanAddItem(Item item, int x, int y)
         {
             if (item == null) return false;
@@ -162,7 +167,8 @@ namespace Modules.Inventories
             ThrowIfSizeZero(item.Size.x, item.Size.y);
             return TryGetPlacement(item, x, y, out _);
         }
-        
+
+
         /// <summary>
         /// Returns a free position for a specified item
         /// </summary>
@@ -171,9 +177,11 @@ namespace Modules.Inventories
             if (item == null) { pos = default; return false; }
             return FindFreePosition(item.Size.x, item.Size.y, out pos);
         }
-        
+
+
         public bool FindFreePosition(Vector2Int size, out Vector2Int pos) => FindFreePosition(size.x, size.y, out pos);
-        
+
+
         public bool FindFreePosition(int sizeX, int sizeY, out Vector2Int pos)
         {
             ThrowIfSizeZero(sizeX, sizeY);
@@ -193,18 +201,21 @@ namespace Modules.Inventories
         /// Checks if the specified position is occupied
         /// </summary>
         public bool IsOccupied(Vector2Int pos) => IsOccupied(pos.x, pos.y);
-        
+
+
         public bool IsOccupied(int x, int y)
         {
             if (!InBounds(x, y)) return false;
             return _slots[ToIndex(x, y)] != -1;
         }
-        
+
+
         /// <summary>
         /// Checks if the specified position is free
         /// </summary>
         public bool IsFree(Vector2Int pos) => IsFree(pos.x, pos.y);
-        
+
+
         public bool IsFree(int x, int y)
         {
             if (!InBounds(x, y)) return false;
@@ -215,7 +226,8 @@ namespace Modules.Inventories
         /// Returns an item at specified position 
         /// </summary>
         public Item GetItem(Vector2Int pos) => GetItem(pos.x, pos.y);
-        
+
+
         public Item GetItem(int x, int y)
         {
             ThrowIfPosNotFitsInventory(x, y);
@@ -223,9 +235,11 @@ namespace Modules.Inventories
             int id = _slots[ToIndex(x, y)];
             return TryGetItemById(id, out var item) ? item : null;
         }
-        
+
+
         public bool TryGetItem(Vector2Int pos, out Item item) => TryGetItem(pos.x, pos.y, out item);
-        
+
+
         public bool TryGetItem(int x, int y, out Item item)
         {
             item = null;
@@ -255,28 +269,19 @@ namespace Modules.Inventories
             pos = null;
             if (item == null) return false;
 
-            if (!TryGetItemById(item.Id, out _))
+            if (!TryFindItemIndex(item.Id, out int i))
                 return false;
 
-            int id = item.Id;
-
-            int count = 0;
-            for (int i = 0; i < _slots.Length; i++)
-                if (_slots[i] == id)
-                    count++;
-
-            if (count == 0)
-                return false;
+            Vector2Int start = ToPos(_values[i]);
+            int w = item.Size.x;
+            int h = item.Size.y;
+            int count = w * h;
 
             var result = new Vector2Int[count];
             int k = 0;
-
-            for (int x = 0; x < _width; x++)
-            for (int y = 0; y < _height; y++)
-            {
-                if (_slots[ToIndex(x, y)] == id)
-                    result[k++] = new Vector2Int(x, y);
-            }
+            for (int dx = 0; dx < w; dx++)
+                for (int dy = 0; dy < h; dy++)
+                    result[k++] = new Vector2Int(start.x + dx, start.y + dy);
 
             pos = result;
             return true;
@@ -308,18 +313,10 @@ namespace Modules.Inventories
             int w = item.Size.x;
             int h = item.Size.y;
 
-            if (!IsFits(pos.x, pos.y, w, h))
+            if (!IsValidMoveTarget(pos.x, pos.y, w, h, item.Id))
                 return false;
 
             ClearItemSlots(item.Id);
-
-            bool canPlace = CanPlaceAt(pos.x, pos.y, w, h);
-
-            if (!canPlace)
-            {
-                PlaceItem(item, ToPos(_values[FindItemIndex(item.Id)]));
-                return false;
-            }
 
             UpdateItemRoot(item.Id, ToIndex(pos.x, pos.y));
             SetSlots(item.Id, pos.x, pos.y, w, h);
@@ -396,42 +393,66 @@ namespace Modules.Inventories
                 return;
 
             int n = _indexSize;
-            var items = new Item[n];
-            for (int i = 0; i < n; i++)
-                items[i] = _items[i];
-
-            Array.Sort(items, Compare);
-
-            Array.Fill(_slots, -1);
-            _indexSize = 0;
-            _count = 0;
-
-            for (int i = 0; i < items.Length; i++)
+            Item[] buffer = ArrayPool<Item>.Shared.Rent(n);
+            try
             {
-                var item = items[i];
-                if (item == null)
-                    continue;
+                Array.Copy(_items, 0, buffer, 0, n);
+                Array.Sort(buffer, 0, n, Comparer<Item>.Create(Compare));
 
-                if (!FindFreePosition(item.Size.x, item.Size.y, out var pos))
-                    throw new InvalidOperationException($"OptimizeSpace failed: item '{item.Name}' (id={item.Id}) does not fit.");
+                Array.Fill(_slots, -1);
+                _indexSize = 0;
+                _count = 0;
 
-                PlaceItem(item, pos.x, pos.y);
+                for (int i = 0; i < n; i++)
+                {
+                    var item = buffer[i];
+                    if (item == null)
+                        continue;
+
+                    if (!FindFreePosition(item.Size.x, item.Size.y, out var pos))
+                        throw new InvalidOperationException($"OptimizeSpace failed: item '{item.Name}' (id={item.Id}) does not fit.");
+
+                    PlaceItem(item, pos.x, pos.y);
+                }
+            }
+            finally
+            {
+                ArrayPool<Item>.Shared.Return(buffer, clearArray: true);
             }
         }
 
         /// <summary>
         /// Iterates by all items 
         /// </summary>
-        public IEnumerator<Item> GetEnumerator()
+        public struct Enumerator
+        {
+            private readonly Item[] _items;
+            private readonly int _indexSize;
+            private int _index;
+
+            internal Enumerator(Item[] items, int indexSize)
+            {
+                _items = items;
+                _indexSize = indexSize;
+                _index = -1;
+            }
+
+            public Item Current => _items[_index];
+
+            public bool MoveNext() => ++_index < _indexSize;
+
+            public void Reset() => _index = -1;
+        }
+
+        public Enumerator GetEnumerator() => new(_items, _indexSize);
+
+        IEnumerator<Item> IEnumerable<Item>.GetEnumerator()
         {
             for (int i = 0; i < _indexSize; i++)
                 yield return _items[i];
         }
 
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
+        IEnumerator IEnumerable.GetEnumerator() => ((IEnumerable<Item>)this).GetEnumerator();
 
         /// <summary>
         /// Returns an inventory matrix in string format
@@ -459,6 +480,8 @@ namespace Modules.Inventories
                         sb.Append('.');
                     }
                 }
+
+
 
                 if (y < _height - 1)
                     sb.AppendLine();

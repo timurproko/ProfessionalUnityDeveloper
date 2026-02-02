@@ -77,14 +77,22 @@ namespace Modules.Inventories
             return x >= 0 && x < _width && y >= 0 && y < _height;
         }
 
-        private bool IsFreeSpace(int startX, int startY, int w, int h)
+        private bool IsFreeSpace(int startX, int startY, int w, int h, int? itemId = null)
         {
             for (int y = startY; y < startY + h; y++)
                 for (int x = startX; x < startX + w; x++)
-                    if (_slots[ToIndex(x, y)] != -1)
+                {
+                    int slot = _slots[ToIndex(x, y)];
+                    if (slot != -1 && (itemId == null || slot != itemId.Value))
                         return false;
+                }
 
             return true;
+        }
+
+        private bool IsValidMoveTarget(int startX, int startY, int w, int h, int itemId)
+        {
+            return IsFits(startX, startY, w, h) && IsFreeSpace(startX, startY, w, h, itemId);
         }
 
         private bool IsIndexAtKey(int index, int id)
@@ -180,19 +188,27 @@ namespace Modules.Inventories
             return true;
         }
 
-        private bool TryGetItemById(int id, out Item item)
+        private bool TryFindItemIndex(int id, out int index)
         {
-            item = null;
+            index = -1;
             if (id == -1) return false;
 
             int i = FindItemIndex(id);
-            if (IsIndexAtKey(i, id))
-            {
-                item = _items[i];
-                return true;
-            }
+            if (!IsIndexAtKey(i, id))
+                return false;
 
-            return false;
+            index = i;
+            return true;
+        }
+
+        private bool TryGetItemById(int id, out Item item)
+        {
+            item = null;
+            if (!TryFindItemIndex(id, out int i))
+                return false;
+
+            item = _items[i];
+            return true;
         }
 
         private void RemoveIndexAt(int index)
@@ -233,15 +249,22 @@ namespace Modules.Inventories
 
         private void ClearItemSlots(int itemId)
         {
-            for (int i = 0; i < _slots.Length; i++)
-                if (_slots[i] == itemId)
-                    _slots[i] = -1;
+            if (!TryFindItemIndex(itemId, out int i))
+                return;
+
+            Vector2Int start = ToPos(_values[i]);
+            int w = _items[i].Size.x;
+            int h = _items[i].Size.y;
+
+            for (int y = start.y; y < start.y + h; y++)
+                for (int x = start.x; x < start.x + w; x++)
+                    _slots[ToIndex(x, y)] = -1;
         }
 
         private void UpdateItemRoot(int itemId, int newRootIndex)
         {
-            int i = FindItemIndex(itemId);
-            _values[i] = newRootIndex;
+            if (TryFindItemIndex(itemId, out int i))
+                _values[i] = newRootIndex;
         }
     }
 }
