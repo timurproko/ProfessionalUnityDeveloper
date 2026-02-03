@@ -7,10 +7,8 @@ namespace ShootEmUp
     {
         [SerializeField] private int totalEnemiesToSpawn = 20;
         [SerializeField] private int maxEnemiesPerWave = 5;
-        [SerializeField] private int poolPrewarmCount = 7;
 
         public int TotalEnemiesToSpawn => totalEnemiesToSpawn;
         public int MaxEnemiesPerWave => maxEnemiesPerWave;
-        public int PoolPrewarmCount => poolPrewarmCount;
     }
 }

@@ -417,13 +417,15 @@ MonoBehaviour:
   - {fileID: 1549378007}
   - {fileID: 78117031}
   - {fileID: 883274640}
-  character: {fileID: 4414282821800802405}
+  _target: {fileID: 4414282821800802405}
   worldTransform: {fileID: 1683128698}
   container: {fileID: 178513672}
   prefab: {fileID: 102605417607457000, guid: 87fe189881a524806800482ac8eaaa83, type: 3}
   bulletSystem: {fileID: 363245577}
+  levelsConfig: {fileID: 11400000, guid: 9815c8353182d0f47b91fd5cf2fd8a3b, type: 2}
   bulletConfig: {fileID: 11400000, guid: a4a66565b2ed66f498dbaca12dc2c159, type: 2}
-  enemySpawnHealth: 1
+  poolPrewarmCount: 5
+  totalSpawned: 0
 --- !u!1 &883274639
 GameObject:
   m_ObjectHideFlags: 0

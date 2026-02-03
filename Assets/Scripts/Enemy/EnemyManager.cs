@@ -14,47 +14,58 @@ namespace ShootEmUp
         [SerializeField] private Transform container;
         [SerializeField] private Enemy prefab;
         [SerializeField] private BulletManager bulletSystem;
-        [SerializeField] private LevelConfig levelConfig;
-        [SerializeField] private BulletConfig bulletConfig;
+        [SerializeField] private LevelsConfig levelsConfig;
+        [SerializeField] private int poolPrewarmCount = 5;
 
         private ObjectPool<Enemy> enemyPool;
         [SerializeField, ReadOnly] private int totalSpawned;
 
         private void Awake()
         {
-            int prewarm = levelConfig.PoolPrewarmCount;
-            
             enemyPool = new ObjectPool<Enemy>(
                 prefab,
                 container,
                 worldTransform,
-                prewarm
+                poolPrewarmCount
             );
         }
 
         private IEnumerator Start()
         {
-            int maxPerWave = levelConfig.MaxEnemiesPerWave;
-            int totalToSpawn = levelConfig.TotalEnemiesToSpawn;
+            if (levelsConfig == null || levelsConfig.LevelCount == 0)
+                yield break;
 
-            while (totalSpawned < totalToSpawn)
+            for (int levelIndex = 0; levelIndex < levelsConfig.LevelCount; levelIndex++)
             {
-                yield return new WaitForSeconds(Random.Range(1, 2));
-
-                if (enemyPool.ActiveCount >= maxPerWave)
+                LevelConfig level = levelsConfig.GetLevel(levelIndex);
+                if (level == null)
                     continue;
 
-                Enemy enemy = enemyPool.Get();
-                totalSpawned++;
+                int maxPerWave = level.MaxEnemiesPerWave;
+                int totalToSpawnThisLevel = level.TotalEnemiesToSpawn;
+                int totalSpawnedThisLevel = 0;
 
-                Transform spawnPosition = RandomPoint(spawnPositions);
-                enemy.transform.position = spawnPosition.position;
+                while (totalSpawnedThisLevel < totalToSpawnThisLevel)
+                {
+                    yield return new WaitForSeconds(Random.Range(1, 2));
 
-                Transform attackPosition = RandomPoint(attackPositions);
-                enemy.SetDestination(attackPosition.position);
-                enemy.Target = _target;
+                    if (enemyPool.ActiveCount >= maxPerWave)
+                        continue;
 
-                enemy.OnFire += OnFire;
+                    Enemy enemy = enemyPool.Get();
+
+                    Transform spawnPosition = RandomPoint(spawnPositions);
+                    enemy.transform.position = spawnPosition.position;
+
+                    Transform attackPosition = RandomPoint(attackPositions);
+                    enemy.SetDestination(attackPosition.position);
+                    enemy.Target = _target;
+
+                    enemy.OnFire += OnFire;
+
+                    totalSpawnedThisLevel++;
+                    totalSpawned++;
+                }
             }
         }
 
@@ -70,9 +81,8 @@ namespace ShootEmUp
             }
         }
 
-        private void OnFire(Vector2 position, Vector2 direction)
+        private void OnFire(BulletSpawnRequest request)
         {
-            BulletSpawnRequest request = bulletConfig.CreateRequest(position, direction);
             bulletSystem.SpawnBullet(request);
         }
 

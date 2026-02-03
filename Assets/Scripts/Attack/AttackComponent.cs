@@ -5,7 +5,7 @@ namespace ShootEmUp
 {
     public sealed class AttackComponent : MonoBehaviour
     {
-        [SerializeField] private float _interval = 1f;
+        [SerializeField] private float _attackInterval = 1f;
 
         public event Action OnFireRequested;
         
@@ -19,7 +19,7 @@ namespace ShootEmUp
 
         public void Reset()
         {
-            currentTime = _interval;
+            currentTime = _attackInterval;
         }
 
         private void FixedUpdate()
@@ -31,7 +31,7 @@ namespace ShootEmUp
             if (currentTime <= 0f)
             {
                 OnFireRequested?.Invoke();
-                currentTime += _interval;
+                currentTime += _attackInterval;
             }
         }
     }

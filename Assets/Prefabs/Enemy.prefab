@@ -174,6 +174,7 @@ MonoBehaviour:
   _healthComponent: {fileID: 8920942286437506176}
   _attackComponent: {fileID: -1996649804710986659}
   _characterConfig: {fileID: 11400000, guid: 9ae2ffeaa969f754e8d50cfd9c2adb48, type: 2}
+  _bulletConfig: {fileID: 11400000, guid: a4a66565b2ed66f498dbaca12dc2c159, type: 2}
   _firePoint: {fileID: 3195880656587174614}
   _rigidbody: {fileID: 659620479434099170}
 --- !u!114 &8920942286437506176
@@ -188,6 +189,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3cce6ee563be4687ae94c8dffeee6b3c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ShootEmUp.HealthComponent
+  _health: 0
 --- !u!114 &-1996649804710986659
 MonoBehaviour:
   m_ObjectHideFlags: 0
