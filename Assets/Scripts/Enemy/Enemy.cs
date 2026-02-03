@@ -4,9 +4,11 @@ using UnityEngine;
 namespace ShootEmUp
 {
     [RequireComponent(typeof(DamageableComponent))]
+    [RequireComponent(typeof(AttackCountdownComponent))]
     public sealed class Enemy : MonoBehaviour
     {
         public delegate void FireHandler(Vector2 position, Vector2 direction);
+
         public event FireHandler OnFire;
 
         [SerializeField] private DamageableComponent damageable;
@@ -16,14 +18,14 @@ namespace ShootEmUp
         private Vector2 destination;
         private bool isPointReached;
 
-        public int Health { get => damageable.Health; set => damageable.Health = value; }
-        public int health => damageable.Health;
+        public int Health
+        {
+            get => damageable.Health;
+            set => damageable.Health = value;
+        }
 
         private void Awake()
         {
-            if (this.damageable == null)
-                this.damageable = this.GetComponent<DamageableComponent>();
-
             if (this.attackCountdown != null)
                 this.attackCountdown.OnFireRequested += this.HandleAttackRequested;
         }
@@ -48,7 +50,7 @@ namespace ShootEmUp
 
         private void HandleAttackRequested()
         {
-            if (this.target == null || this.target.health <= 0)
+            if (!this.target || this.target.health <= 0)
                 return;
 
             Vector2 startPosition = this.damageable.FirePoint.position;

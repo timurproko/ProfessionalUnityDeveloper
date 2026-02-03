@@ -37,13 +37,25 @@ namespace ShootEmUp
             }
         }
 
+        public void SpawnBullet(BulletSpawnRequest request)
+        {
+            this.SpawnBullet(
+                request.Position,
+                request.Velocity,
+                request.Color,
+                request.PhysicsLayer,
+                request.Damage,
+                request.IsPlayer
+            );
+        }
+
         public void SpawnBullet(
             Vector2 position,
+            Vector2 velocity,
             Color color,
             int physicsLayer,
             int damage,
-            bool isPlayer,
-            Vector2 velocity
+            bool isPlayer
         )
         {
             Bullet bullet = this.bulletPool.Get();

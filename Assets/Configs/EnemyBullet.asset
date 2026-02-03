@@ -10,10 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 52e006d90835e834ba8a4bcc42305200, type: 3}
-  m_Name: PlayerBullet
+  m_Name: EnemyBullet
   m_EditorClassIdentifier: Assembly-CSharp::ShootEmUp.BulletConfig
-  _isPlayer: 1
-  _color: {r: 0, g: 0, b: 1, a: 1}
+  _isPlayer: 0
+  _color: {r: 1, g: 0, b: 0, a: 1}
   _physicsLayer: 0
   _damage: 1
   _speed: 3

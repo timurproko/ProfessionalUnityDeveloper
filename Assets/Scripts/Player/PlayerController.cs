@@ -4,11 +4,9 @@ namespace ShootEmUp
 {
     public sealed class PlayerController : MonoBehaviour
     {
-        [SerializeField]
-        private Player character;
-
-        [SerializeField]
-        private BulletManager bulletManager;
+        [SerializeField] private Player character;
+        [SerializeField] private BulletManager bulletManager;
+        [SerializeField] private BulletConfig bulletConfig;
 
         private bool fireRequired;
         private float moveDirection;
@@ -35,15 +33,10 @@ namespace ShootEmUp
         {
             if (fireRequired)
             {
-                bulletManager.SpawnBullet(
-                    this.character.firePoint.position,
-                    Color.blue,
-                    (int) PhysicsLayer.PLAYER_BULLET,
-                    1,
-                    true,
-                    this.character.firePoint.rotation * Vector3.up * 3
-                );
-
+                Vector2 position = this.character.firePoint.position;
+                Vector2 direction = this.character.firePoint.rotation * Vector3.up;
+                BulletSpawnRequest request = this.bulletConfig.CreateRequest(position, direction);
+                this.bulletManager.SpawnBullet(request);
                 fireRequired = false;
             }
             

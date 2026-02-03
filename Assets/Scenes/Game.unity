@@ -422,6 +422,7 @@ MonoBehaviour:
   container: {fileID: 178513672}
   prefab: {fileID: 102605417607457000, guid: 87fe189881a524806800482ac8eaaa83, type: 3}
   bulletSystem: {fileID: 363245577}
+  bulletConfig: {fileID: 11400000, guid: a4a66565b2ed66f498dbaca12dc2c159, type: 2}
   enemySpawnHealth: 1
 --- !u!1 &883274639
 GameObject:
@@ -783,6 +784,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   character: {fileID: 4414282821800802405}
   bulletManager: {fileID: 363245577}
+  bulletConfig: {fileID: 11400000, guid: 39d44f119e624c843a533735dad5cf31, type: 2}
 --- !u!1 &61006797492197339
 GameObject:
   m_ObjectHideFlags: 0

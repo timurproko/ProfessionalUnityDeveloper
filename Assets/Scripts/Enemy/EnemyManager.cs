@@ -17,6 +17,7 @@ namespace ShootEmUp
         [SerializeField] private Transform container;
         [SerializeField] private Enemy prefab;
         [SerializeField] private BulletManager bulletSystem;
+        [SerializeField] private BulletConfig bulletConfig;
         [SerializeField] private int enemySpawnHealth = 1;
 
         private ObjectPool<Enemy> enemyPool;
@@ -68,14 +69,8 @@ namespace ShootEmUp
 
         private void OnFire(Vector2 position, Vector2 direction)
         {
-            bulletSystem.SpawnBullet(
-                position,
-                Color.red,
-                (int) PhysicsLayer.ENEMY_BULLET,
-                1,
-                false,
-                direction * 2
-            );
+            BulletSpawnRequest request = this.bulletConfig.CreateRequest(position, direction);
+            this.bulletSystem.SpawnBullet(request);
         }
 
         private Transform RandomPoint(Transform[] points)

@@ -23,11 +23,5 @@ namespace ShootEmUp
             add => damageable.OnHealthEmpty += value;
             remove => damageable.OnHealthEmpty -= value;
         }
-
-        private void Awake()
-        {
-            if (this.damageable == null)
-                this.damageable = this.GetComponent<DamageableComponent>();
-        }
     }
 }

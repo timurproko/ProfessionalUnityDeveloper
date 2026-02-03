@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c82a76cab05a50e489066f0070e7f63b, type: 3}
   m_Name: Enemy
   m_EditorClassIdentifier: Assembly-CSharp::ShootEmUp.CharacterConfig
-  defaultHealth: 1
   isPlayer: 0
-  speed: 5
+  defaultHealth: 3
+  speed: 3
