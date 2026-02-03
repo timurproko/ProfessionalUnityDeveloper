@@ -3,28 +3,31 @@ using UnityEngine;
 
 namespace ShootEmUp
 {
-    public sealed class Player : MonoBehaviour, IDamageable
+    [RequireComponent(typeof(DamageableEntity))]
+    public sealed class Player : MonoBehaviour
     {
-        public event Action<IDamageable, int> OnHealthChanged;
-        public event Action<IDamageable> OnHealthEmpty;
+        [SerializeField] private DamageableEntity damageable;
 
-        public bool IsPlayer => isPlayer;
-        public int Health
+        public Transform firePoint => damageable.FirePoint;
+        public Rigidbody2D _rigidbody => damageable.Rigidbody2D;
+        public float speed => damageable.Speed;
+        public int health => damageable.Health;
+
+        public event Action<IDamageable, int> OnHealthChanged
         {
-            get => health;
-            set
-            {
-                health = value;
-                OnHealthChanged?.Invoke(this, health);
-                if (health <= 0)
-                    OnHealthEmpty?.Invoke(this);
-            }
+            add => damageable.OnHealthChanged += value;
+            remove => damageable.OnHealthChanged -= value;
+        }
+        public event Action<IDamageable> OnHealthEmpty
+        {
+            add => damageable.OnHealthEmpty += value;
+            remove => damageable.OnHealthEmpty -= value;
         }
 
-        [SerializeField] public bool isPlayer;
-        [SerializeField] public Transform firePoint;
-        [SerializeField] public int health;
-        [SerializeField] public Rigidbody2D _rigidbody;
-        [SerializeField] public float speed = 5.0f;
+        private void Awake()
+        {
+            if (this.damageable == null)
+                this.damageable = this.GetComponent<DamageableEntity>();
+        }
     }
 }

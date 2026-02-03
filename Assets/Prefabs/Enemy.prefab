@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 5568771391735819375}
   - component: {fileID: 659620479434099170}
   - component: {fileID: 102605417607457000}
+  - component: {fileID: 4781999730199454538}
   m_Layer: 11
   m_Name: Enemy
   m_TagString: Untagged
@@ -169,12 +170,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e09a324f54d94d6e84681731f36566c4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isPlayer: 0
-  firePoint: {fileID: 3195880656587174614}
-  health: 3
-  rigidbody: {fileID: 659620479434099170}
-  speed: 3
+  damageable: {fileID: 4781999730199454538}
   countdown: 1
+--- !u!114 &4781999730199454538
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 559606060570185700}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 05760eba3a5582a46b7a3d01f894b8b3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ShootEmUp.DamageableEntity
+  config: {fileID: 11400000, guid: 9ae2ffeaa969f754e8d50cfd9c2adb48, type: 2}
+  firePoint: {fileID: 3195880656587174614}
+  rigidbody2d: {fileID: 659620479434099170}
 --- !u!1 &2239154907127902911
 GameObject:
   m_ObjectHideFlags: 0
