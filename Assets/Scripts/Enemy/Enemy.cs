@@ -10,11 +10,10 @@ namespace ShootEmUp
         public event FireHandler OnFire;
 
         [SerializeField] private DamageableComponent damageable;
-        [SerializeField] private float countdown;
+        [SerializeField] private AttackCountdownComponent attackCountdown;
         [NonSerialized] public Player target;
 
         private Vector2 destination;
-        private float currentTime;
         private bool isPointReached;
 
         public int Health { get => damageable.Health; set => damageable.Health = value; }
@@ -24,36 +23,45 @@ namespace ShootEmUp
         {
             if (this.damageable == null)
                 this.damageable = this.GetComponent<DamageableComponent>();
+
+            if (this.attackCountdown != null)
+                this.attackCountdown.OnFireRequested += this.HandleAttackRequested;
+        }
+
+        private void OnDestroy()
+        {
+            if (this.attackCountdown != null)
+                this.attackCountdown.OnFireRequested -= this.HandleAttackRequested;
         }
 
         public void Reset()
         {
-            this.currentTime = this.countdown;
+            this.attackCountdown?.Reset();
         }
 
         public void SetDestination(Vector2 endPoint)
         {
             this.destination = endPoint;
             this.isPointReached = false;
+            this.attackCountdown?.SetActive(false);
+        }
+
+        private void HandleAttackRequested()
+        {
+            if (this.target == null || this.target.health <= 0)
+                return;
+
+            Vector2 startPosition = this.damageable.FirePoint.position;
+            Vector2 vector = (Vector2)this.target.transform.position - startPosition;
+            Vector2 direction = vector.normalized;
+            this.OnFire?.Invoke(startPosition, direction);
         }
 
         private void FixedUpdate()
         {
             if (this.isPointReached)
             {
-                if (this.target != null && this.target.health <= 0)
-                    return;
-
-                this.currentTime -= Time.fixedDeltaTime;
-                if (this.currentTime <= 0)
-                {
-                    Vector2 startPosition = this.damageable.FirePoint.position;
-                    Vector2 vector = (Vector2)this.target.transform.position - startPosition;
-                    Vector2 direction = vector.normalized;
-                    this.OnFire?.Invoke(startPosition, direction);
-
-                    this.currentTime += this.countdown;
-                }
+                this.attackCountdown?.SetActive(this.target != null && this.target.health > 0);
             }
             else
             {
@@ -61,6 +69,7 @@ namespace ShootEmUp
                 if (vector.magnitude <= 0.25f)
                 {
                     this.isPointReached = true;
+                    this.attackCountdown?.Reset();
                     return;
                 }
 

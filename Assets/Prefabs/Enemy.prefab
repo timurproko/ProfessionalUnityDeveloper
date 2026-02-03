@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 659620479434099170}
   - component: {fileID: 102605417607457000}
   - component: {fileID: 4781999730199454538}
+  - component: {fileID: -1996649804710986659}
   m_Layer: 11
   m_Name: Enemy
   m_TagString: Untagged
@@ -171,7 +172,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   damageable: {fileID: 4781999730199454538}
-  countdown: 1
+  attackCountdown: {fileID: -1996649804710986659}
 --- !u!114 &4781999730199454538
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -187,6 +188,19 @@ MonoBehaviour:
   config: {fileID: 11400000, guid: 9ae2ffeaa969f754e8d50cfd9c2adb48, type: 2}
   firePoint: {fileID: 3195880656587174614}
   rigidbody2d: {fileID: 659620479434099170}
+--- !u!114 &-1996649804710986659
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 559606060570185700}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6d58a2d91350c414e8fba2732b610e4b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ShootEmUp.AttackCountdownComponent
+  _interval: 1
 --- !u!1 &2239154907127902911
 GameObject:
   m_ObjectHideFlags: 0
