@@ -68,7 +68,7 @@ namespace ShootEmUp
             bullet.gameObject.layer = physicsLayer;
             bullet.damage = damage;
             bullet.isPlayer = isPlayer;
-            bullet.rigidbody2D.velocity = velocity;
+            bullet.rigidbody2D.linearVelocity = velocity;
 
             if (m_activeBullets.Add(bullet))
             {
