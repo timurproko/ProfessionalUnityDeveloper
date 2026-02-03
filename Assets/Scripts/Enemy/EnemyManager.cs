@@ -10,11 +10,11 @@ namespace ShootEmUp
         [SerializeField] private Transform[] spawnPositions;
         [SerializeField] private Transform[] attackPositions;
         [SerializeField] private Player _target;
-        [SerializeField] private Transform worldTransform;
-        [SerializeField] private Transform container;
-        [SerializeField] private Enemy prefab;
-        [SerializeField] private LevelsConfig levelsConfig;
-        [SerializeField] private int poolPrewarmCount = 5;
+        [SerializeField] private Transform _worldTransform;
+        [SerializeField] private Transform _container;
+        [SerializeField] private Enemy _prefab;
+        [SerializeField] private LevelsConfig _levelsConfig;
+        [SerializeField] private int _poolPrewarmCount = 5;
 
         private ObjectPool<Enemy> _enemyPool;
         [SerializeField, ReadOnly] private int _totalSpawned;
@@ -22,21 +22,21 @@ namespace ShootEmUp
         private void Awake()
         {
             _enemyPool = new ObjectPool<Enemy>(
-                prefab,
-                container,
-                worldTransform,
-                poolPrewarmCount
+                _prefab,
+                _container,
+                _worldTransform,
+                _poolPrewarmCount
             );
         }
 
         private IEnumerator Start()
         {
-            if (levelsConfig == null || levelsConfig.LevelCount == 0)
+            if (_levelsConfig == null || _levelsConfig.LevelCount == 0)
                 yield break;
 
-            for (int levelIndex = 0; levelIndex < levelsConfig.LevelCount; levelIndex++)
+            for (int levelIndex = 0; levelIndex < _levelsConfig.LevelCount; levelIndex++)
             {
-                LevelConfig level = levelsConfig.GetLevel(levelIndex);
+                LevelConfig level = _levelsConfig.GetLevel(levelIndex);
                 if (level == null)
                     continue;
 

@@ -16,20 +16,18 @@ namespace ShootEmUp
         [SerializeField] private BulletConfig _bulletConfig;
 
         public HealthComponent HealthComponent => _healthComponent;
-        public BulletConfig BulletConfig => _bulletConfig;
-        BulletConfig IBulletProvider.GetBulletConfig() => _bulletConfig;
         public Vector2 Position => transform.position;
         public float Speed => _characterConfig.Speed;
         public bool IsAlive => _healthComponent != null && _healthComponent.Health > 0;
-        public Transform FirePoint => _firePoint;
         public Rigidbody2D Rigidbody => _rigidbody;
+        public BulletConfig GetBulletConfig() => _bulletConfig;
 
         public void Fire()
         {
             if (_bulletConfig == null)
                 return;
             Vector2 position = _firePoint.position;
-            Vector2 direction = (Vector2)(_firePoint.rotation * Vector3.up);
+            Vector2 direction = _firePoint.rotation * Vector3.up;
             FireRequestChannel.Raise(this, position, direction);
         }
 
