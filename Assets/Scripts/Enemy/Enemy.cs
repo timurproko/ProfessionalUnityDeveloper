@@ -3,13 +3,13 @@ using UnityEngine;
 
 namespace ShootEmUp
 {
-    [RequireComponent(typeof(DamageableEntity))]
+    [RequireComponent(typeof(DamageableComponent))]
     public sealed class Enemy : MonoBehaviour
     {
         public delegate void FireHandler(Vector2 position, Vector2 direction);
         public event FireHandler OnFire;
 
-        [SerializeField] private DamageableEntity damageable;
+        [SerializeField] private DamageableComponent damageable;
         [SerializeField] private float countdown;
         [NonSerialized] public Player target;
 
@@ -23,7 +23,7 @@ namespace ShootEmUp
         private void Awake()
         {
             if (this.damageable == null)
-                this.damageable = this.GetComponent<DamageableEntity>();
+                this.damageable = this.GetComponent<DamageableComponent>();
         }
 
         public void Reset()

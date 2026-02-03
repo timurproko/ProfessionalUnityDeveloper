@@ -3,12 +3,7 @@ using UnityEngine;
 
 namespace ShootEmUp
 {
-    /// <summary>
-    /// Runtime character: reads shared config from a ScriptableObject (CharacterConfig),
-    /// holds per-instance refs (firePoint, rigidbody) and current health. Implements IDamageable.
-    /// Attach to Player and Enemy GameObjects with a CharacterConfig asset assigned.
-    /// </summary>
-    public sealed class DamageableEntity : MonoBehaviour, IDamageable
+    public sealed class DamageableComponent : MonoBehaviour, IDamageable
     {
         public event Action<IDamageable, int> OnHealthChanged;
         public event Action<IDamageable> OnHealthEmpty;

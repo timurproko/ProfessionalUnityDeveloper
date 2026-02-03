@@ -3,10 +3,10 @@ using UnityEngine;
 
 namespace ShootEmUp
 {
-    [RequireComponent(typeof(DamageableEntity))]
+    [RequireComponent(typeof(DamageableComponent))]
     public sealed class Player : MonoBehaviour
     {
-        [SerializeField] private DamageableEntity damageable;
+        [SerializeField] private DamageableComponent damageable;
 
         public Transform firePoint => damageable.FirePoint;
         public Rigidbody2D _rigidbody => damageable.Rigidbody2D;
@@ -27,7 +27,7 @@ namespace ShootEmUp
         private void Awake()
         {
             if (this.damageable == null)
-                this.damageable = this.GetComponent<DamageableEntity>();
+                this.damageable = this.GetComponent<DamageableComponent>();
         }
     }
 }
