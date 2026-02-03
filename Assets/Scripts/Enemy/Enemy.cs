@@ -27,7 +27,7 @@ namespace ShootEmUp
         [SerializeField] public bool isPlayer;
         [SerializeField] public Transform firePoint;
         [SerializeField] public int health;
-        [SerializeField] public Rigidbody2D _rigidbody;
+        [SerializeField] public Rigidbody2D rigidbody;
         [SerializeField] public float speed = 5.0f;
         [SerializeField] private float countdown;
         [NonSerialized] public Player target;
@@ -77,8 +77,8 @@ namespace ShootEmUp
                 }
 
                 Vector2 direction = vector.normalized * Time.fixedDeltaTime;
-                Vector2 nextPosition = _rigidbody.position + direction * speed;
-                _rigidbody.MovePosition(nextPosition);
+                Vector2 nextPosition = rigidbody.position + direction * speed;
+                rigidbody.MovePosition(nextPosition);
             }
         }
     }
