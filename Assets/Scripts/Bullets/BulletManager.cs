@@ -5,17 +5,10 @@ namespace ShootEmUp
 {
     public sealed class BulletManager : MonoBehaviour
     {
-        [SerializeField]
-        public Bullet prefab;
-
-        [SerializeField]
-        public Transform worldTransform;
-
-        [SerializeField]
-        private LevelBounds levelBounds;
-        
-        [SerializeField]
-        private Transform container;
+        [SerializeField] public Bullet prefab;
+        [SerializeField] public Transform worldTransform;
+        [SerializeField] private LevelBounds levelBounds;
+        [SerializeField] private Transform container;
 
         public readonly HashSet<Bullet> m_activeBullets = new();
         public readonly Queue<Bullet> m_bulletPool = new();
@@ -97,31 +90,13 @@ namespace ShootEmUp
             int damage = bullet.damage;
             if (damage <= 0)
                 return;
-            
-            if (other.TryGetComponent(out Player player))
-            {
-                if (bullet.isPlayer != player.isPlayer)
-                {
-                    if (player.health <= 0)
-                        return;
 
-                    player.health = Mathf.Max(0, player.health - damage);
-                    player.OnHealthChanged?.Invoke(player, player.health);
+            if (!other.TryGetComponent(out IDamageable damageable) || bullet.isPlayer == damageable.IsPlayer)
+                return;
+            if (damageable.Health <= 0)
+                return;
 
-                    if (player.health <= 0)
-                        player.OnHealthEmpty?.Invoke(player);
-                }
-            }
-            else if (other.TryGetComponent(out Enemy enemy))
-            {
-                if (bullet.isPlayer != enemy.isPlayer)
-                {
-                    if (enemy.health > 0)
-                    {
-                        enemy.health = Mathf.Max(0, enemy.health - damage);
-                    }
-                }
-            }
+            damageable.Health = Mathf.Max(0, damageable.Health - damage);
         }
     }
 }

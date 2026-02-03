@@ -8,6 +8,9 @@ namespace ShootEmUp
 {
     public sealed class EnemyManager : MonoBehaviour
     {
+        private const int POOL_PREWARM_COUNT = 7;
+        private const int MAX_ACTIVE_ENEMIES = 5;
+        
         [SerializeField]
         private Transform[] spawnPositions;
 
@@ -28,13 +31,17 @@ namespace ShootEmUp
         
         [SerializeField]
         private BulletManager _bulletSystem;
-        
+
+        [SerializeField]
+        private int enemySpawnHealth = 1;
+
+
         private readonly HashSet<Enemy> m_activeEnemies = new();
         private readonly Queue<Enemy> enemyPool = new();
         
         private void Awake()
         {
-            for (var i = 0; i < 7; i++)
+            for (var i = 0; i < POOL_PREWARM_COUNT; i++)
             {
                 Enemy enemy = Instantiate(this.prefab, this.container);
                 this.enemyPool.Enqueue(enemy);
@@ -46,7 +53,10 @@ namespace ShootEmUp
             while (true)
             {
                 yield return new WaitForSeconds(Random.Range(1, 2));
-                
+
+                if (this.m_activeEnemies.Count >= MAX_ACTIVE_ENEMIES)
+                    continue;
+
                 if (!this.enemyPool.TryDequeue(out Enemy enemy))
                 {
                     enemy = Instantiate(this.prefab, this.container);
@@ -60,8 +70,9 @@ namespace ShootEmUp
                 Transform attackPosition = this.RandomPoint(this.attackPositions);
                 enemy.SetDestination(attackPosition.position);
                 enemy.target = this.character;
+                enemy.Health = this.enemySpawnHealth;
 
-                if (this.m_activeEnemies.Count < 5 && this.m_activeEnemies.Add(enemy))
+                if (this.m_activeEnemies.Add(enemy))
                 {
                     enemy.OnFire += this.OnFire;
                 }
