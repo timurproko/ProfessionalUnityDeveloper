@@ -49,7 +49,7 @@ namespace ShootEmUp
                 Transform attackPosition = this.RandomPoint(this.attackPositions);
                 enemy.SetDestination(attackPosition.position);
                 enemy.target = this.character;
-                enemy.Health = this.enemySpawnHealth;
+                enemy.HealthComponent.Health = this.enemySpawnHealth;
 
                 enemy.OnFire += this.OnFire;
             }
@@ -59,7 +59,7 @@ namespace ShootEmUp
         {
             foreach (Enemy enemy in this.enemyPool.GetActiveSnapshot())
             {
-                if (enemy.Health <= 0)
+                if (enemy.HealthComponent.Health <= 0)
                 {
                     enemy.OnFire -= this.OnFire;
                     this.enemyPool.Return(enemy);

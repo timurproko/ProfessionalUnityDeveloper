@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 5568771391735819375}
   - component: {fileID: 659620479434099170}
   - component: {fileID: 102605417607457000}
-  - component: {fileID: 4781999730199454538}
+  - component: {fileID: 8920942286437506176}
   - component: {fileID: -1996649804710986659}
   m_Layer: 11
   m_Name: Enemy
@@ -171,9 +171,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e09a324f54d94d6e84681731f36566c4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  damageable: {fileID: 4781999730199454538}
-  attackCountdown: {fileID: -1996649804710986659}
---- !u!114 &4781999730199454538
+  _healthComponent: {fileID: 8920942286437506176}
+  _attackComponent: {fileID: -1996649804710986659}
+  _characterConfig: {fileID: 11400000, guid: 9ae2ffeaa969f754e8d50cfd9c2adb48, type: 2}
+  _firePoint: {fileID: 3195880656587174614}
+  _rigidbody: {fileID: 659620479434099170}
+--- !u!114 &8920942286437506176
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -182,12 +185,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 559606060570185700}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 05760eba3a5582a46b7a3d01f894b8b3, type: 3}
+  m_Script: {fileID: 11500000, guid: 3cce6ee563be4687ae94c8dffeee6b3c, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ShootEmUp.DamageableEntity
-  config: {fileID: 11400000, guid: 9ae2ffeaa969f754e8d50cfd9c2adb48, type: 2}
-  firePoint: {fileID: 3195880656587174614}
-  rigidbody2d: {fileID: 659620479434099170}
+  m_EditorClassIdentifier: Assembly-CSharp::ShootEmUp.HealthComponent
 --- !u!114 &-1996649804710986659
 MonoBehaviour:
   m_ObjectHideFlags: 0

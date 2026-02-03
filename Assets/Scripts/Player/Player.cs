@@ -1,27 +1,25 @@
-using System;
 using UnityEngine;
 
 namespace ShootEmUp
 {
-    [RequireComponent(typeof(DamageableComponent))]
+    [RequireComponent(typeof(HealthComponent))]
     public sealed class Player : MonoBehaviour
     {
-        [SerializeField] private DamageableComponent damageable;
+        [SerializeField] private PlayerController _playerController;
+        [SerializeField] private HealthComponent _healthComponent;
+        [SerializeField] private CharacterConfig _characterConfig;
+        [SerializeField] private Transform _firePoint;
+        [SerializeField] private Rigidbody2D _rigidbody;
 
-        public Transform firePoint => damageable.FirePoint;
-        public Rigidbody2D _rigidbody => damageable.Rigidbody2D;
-        public float speed => damageable.Speed;
-        public int health => damageable.Health;
+        public HealthComponent HealthComponent => _healthComponent;
+        public Transform FirePoint => _firePoint;
+        public Rigidbody2D Rigidbody => _rigidbody;
 
-        public event Action<IDamageable, int> OnHealthChanged
+        public float Speed => _characterConfig.Speed;
+
+        private void Awake()
         {
-            add => damageable.OnHealthChanged += value;
-            remove => damageable.OnHealthChanged -= value;
-        }
-        public event Action<IDamageable> OnHealthEmpty
-        {
-            add => damageable.OnHealthEmpty += value;
-            remove => damageable.OnHealthEmpty -= value;
+            _playerController.Init(this);
         }
     }
 }

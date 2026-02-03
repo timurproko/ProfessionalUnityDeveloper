@@ -3,81 +3,78 @@ using UnityEngine;
 
 namespace ShootEmUp
 {
-    [RequireComponent(typeof(DamageableComponent))]
-    [RequireComponent(typeof(AttackCountdownComponent))]
+    [RequireComponent(typeof(HealthComponent))]
+    [RequireComponent(typeof(AttackComponent))]
     public sealed class Enemy : MonoBehaviour
     {
-        public delegate void FireHandler(Vector2 position, Vector2 direction);
-
-        public event FireHandler OnFire;
-
-        [SerializeField] private DamageableComponent damageable;
-        [SerializeField] private AttackCountdownComponent attackCountdown;
+        [SerializeField] private HealthComponent _healthComponent;
+        [SerializeField] private AttackComponent _attackComponent;
+        [SerializeField] private CharacterConfig _characterConfig;
+        [SerializeField] private Transform _firePoint;
+        [SerializeField] private Rigidbody2D _rigidbody;
+        
         [NonSerialized] public Player target;
+        
+        public delegate void FireHandler(Vector2 position, Vector2 direction);
+        public event FireHandler OnFire;
+        public HealthComponent HealthComponent => _healthComponent;
 
         private Vector2 destination;
         private bool isPointReached;
-
-        public int Health
-        {
-            get => damageable.Health;
-            set => damageable.Health = value;
-        }
-
+        
         private void Awake()
         {
-            if (this.attackCountdown != null)
-                this.attackCountdown.OnFireRequested += this.HandleAttackRequested;
+            _healthComponent.Init(_characterConfig);
+            _attackComponent.OnFireRequested += HandleAttackRequested;
         }
 
         private void OnDestroy()
         {
-            if (this.attackCountdown != null)
-                this.attackCountdown.OnFireRequested -= this.HandleAttackRequested;
+            _attackComponent.OnFireRequested -= HandleAttackRequested;
         }
 
         public void Reset()
         {
-            this.attackCountdown?.Reset();
+            _attackComponent?.Reset();
         }
 
         public void SetDestination(Vector2 endPoint)
         {
-            this.destination = endPoint;
-            this.isPointReached = false;
-            this.attackCountdown?.SetActive(false);
+            destination = endPoint;
+            isPointReached = false;
+            _attackComponent?.SetActive(false);
         }
 
         private void HandleAttackRequested()
         {
-            if (!this.target || this.target.health <= 0)
+            if (!target || target.HealthComponent.Health <= 0)
                 return;
 
-            Vector2 startPosition = this.damageable.FirePoint.position;
-            Vector2 vector = (Vector2)this.target.transform.position - startPosition;
+            Vector2 startPosition = _firePoint.position;
+            Vector2 vector = (Vector2)target.transform.position - startPosition;
             Vector2 direction = vector.normalized;
-            this.OnFire?.Invoke(startPosition, direction);
+            OnFire?.Invoke(startPosition, direction);
         }
 
         private void FixedUpdate()
         {
-            if (this.isPointReached)
+            if (isPointReached)
             {
-                this.attackCountdown?.SetActive(this.target != null && this.target.health > 0);
+                _attackComponent?.SetActive(target && target.HealthComponent.Health > 0);
             }
             else
             {
-                Vector2 vector = this.destination - (Vector2)this.transform.position;
+                Vector2 vector = destination - (Vector2)transform.position;
                 if (vector.magnitude <= 0.25f)
                 {
-                    this.isPointReached = true;
-                    this.attackCountdown?.Reset();
+                    isPointReached = true;
+                    _attackComponent?.Reset();
                     return;
                 }
 
                 Vector2 dir = vector.normalized * Time.fixedDeltaTime;
-                Vector2 nextPosition = this.damageable.Rigidbody2D.position + dir * this.damageable.Speed;
-                this.damageable.Rigidbody2D.MovePosition(nextPosition);
+                Vector2 nextPosition = _rigidbody.position + dir * _characterConfig.Speed;
+                _rigidbody.MovePosition(nextPosition);
             }
         }
     }

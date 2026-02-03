@@ -2,10 +2,6 @@ using UnityEngine;
 
 namespace ShootEmUp
 {
-    /// <summary>
-    /// Shared character stats (team, movement, default health). Use one asset per character type
-    /// (e.g. PlayerConfig, EnemyConfig) and assign on Player/Enemy prefabs to decouple config from code.
-    /// </summary>
     [CreateAssetMenu(fileName = "CharacterConfig", menuName = "ShootEmUp/Character Config", order = 0)]
     public sealed class CharacterConfig : ScriptableObject
     {

@@ -14,6 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ShootEmUp.BulletConfig
   _isPlayer: 1
   _color: {r: 0, g: 0, b: 1, a: 1}
-  _physicsLayer: 0
+  _physicsLayer: 14
   _damage: 1
   _speed: 3

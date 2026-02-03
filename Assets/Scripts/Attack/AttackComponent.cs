@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace ShootEmUp
 {
-    public sealed class AttackCountdownComponent : MonoBehaviour
+    public sealed class AttackComponent : MonoBehaviour
     {
         [SerializeField] private float _interval = 1f;
 
