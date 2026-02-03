@@ -18,7 +18,6 @@ namespace ShootEmUp
         [SerializeField] private Enemy prefab;
         [SerializeField] private BulletManager bulletSystem;
         [SerializeField] private BulletConfig bulletConfig;
-        [SerializeField] private int enemySpawnHealth = 1;
 
         private ObjectPool<Enemy> enemyPool;
 
@@ -49,7 +48,6 @@ namespace ShootEmUp
                 Transform attackPosition = this.RandomPoint(this.attackPositions);
                 enemy.SetDestination(attackPosition.position);
                 enemy.target = this.character;
-                enemy.HealthComponent.Health = this.enemySpawnHealth;
 
                 enemy.OnFire += this.OnFire;
             }

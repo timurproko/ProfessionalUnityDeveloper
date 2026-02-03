@@ -16,30 +16,30 @@ namespace ShootEmUp
 
         private void Awake()
         {
-            this.bulletPool = new ObjectPool<Bullet>(
-                this.prefab,
-                this.container,
-                this.worldTransform,
+            bulletPool = new ObjectPool<Bullet>(
+                prefab,
+                container,
+                worldTransform,
                 PoolPrewarmCount
             );
         }
 
         private void FixedUpdate()
         {
-            IReadOnlyList<Bullet> activeBullets = this.bulletPool.GetActiveSnapshot();
+            IReadOnlyList<Bullet> activeBullets = bulletPool.GetActiveSnapshot();
             for (int i = 0; i < activeBullets.Count; i++)
             {
                 Bullet bullet = activeBullets[i];
-                if (!this.levelBounds.InBounds(bullet.transform.position))
+                if (!levelBounds.InBounds(bullet.transform.position))
                 {
-                    this.ReturnBullet(bullet);
+                    ReturnBullet(bullet);
                 }
             }
         }
 
         public void SpawnBullet(BulletSpawnRequest request)
         {
-            this.SpawnBullet(
+            SpawnBullet(
                 request.Position,
                 request.Velocity,
                 request.Color,
@@ -58,7 +58,7 @@ namespace ShootEmUp
             bool isPlayer
         )
         {
-            Bullet bullet = this.bulletPool.Get();
+            Bullet bullet = bulletPool.Get();
 
             bullet.transform.position = position;
             bullet.spriteRenderer.color = color;
@@ -72,14 +72,14 @@ namespace ShootEmUp
 
         private void OnBulletCollision(Bullet bullet, Collision2D collision)
         {
-            this.DealDamage(bullet, collision.gameObject);
-            this.ReturnBullet(bullet);
+            DealDamage(bullet, collision.gameObject);
+            ReturnBullet(bullet);
         }
 
         private void ReturnBullet(Bullet bullet)
         {
             bullet.OnCollisionEntered -= this.OnBulletCollision;
-            this.bulletPool.Return(bullet);
+            bulletPool.Return(bullet);
         }
 
         private void DealDamage(Bullet bullet, GameObject other)

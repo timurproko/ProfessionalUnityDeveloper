@@ -12,13 +12,14 @@ namespace ShootEmUp
         [SerializeField] private Rigidbody2D _rigidbody;
 
         public HealthComponent HealthComponent => _healthComponent;
+        
         public Transform FirePoint => _firePoint;
         public Rigidbody2D Rigidbody => _rigidbody;
-
         public float Speed => _characterConfig.Speed;
 
         private void Awake()
         {
+            _healthComponent.Init(_characterConfig);
             _playerController.Init(this);
         }
     }

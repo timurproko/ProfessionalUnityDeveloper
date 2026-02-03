@@ -8,7 +8,7 @@ namespace ShootEmUp
         public event Action<IDamageable, int> OnHealthChanged;
         public event Action<IDamageable> OnHealthEmpty;
         
-        public bool IsPlayer => _characterConfig.IsPlayer;
+        public bool IsPlayer => _characterConfig != null && _characterConfig.IsPlayer;
 
         public int Health
         {
@@ -23,12 +23,14 @@ namespace ShootEmUp
         }
         
         private CharacterConfig _characterConfig;
-        private int _health;
+        [SerializeField, ReadOnly] private int _health;
 
         public void Init(CharacterConfig characterConfig)
         {
             _characterConfig = characterConfig;
-            _health = _characterConfig.DefaultHealth;
+            
+            if (_characterConfig != null)
+                _health = _characterConfig.DefaultHealth;
         }
     }
 }

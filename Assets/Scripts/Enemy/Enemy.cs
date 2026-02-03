@@ -17,6 +17,7 @@ namespace ShootEmUp
         
         public delegate void FireHandler(Vector2 position, Vector2 direction);
         public event FireHandler OnFire;
+        
         public HealthComponent HealthComponent => _healthComponent;
 
         private Vector2 destination;
