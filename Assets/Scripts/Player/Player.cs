@@ -3,7 +3,7 @@ using UnityEngine;
 namespace ShootEmUp
 {
     [RequireComponent(typeof(HealthComponent))]
-    public sealed class Player : MonoBehaviour
+    public sealed class Player : MonoBehaviour, ITarget
     {
         [SerializeField] private PlayerController _playerController;
         [SerializeField] private HealthComponent _healthComponent;
@@ -12,10 +12,11 @@ namespace ShootEmUp
         [SerializeField] private Rigidbody2D _rigidbody;
 
         public HealthComponent HealthComponent => _healthComponent;
-        
+        public Vector2 Position => transform.position;
+        public float Speed => _characterConfig.Speed;
+        public bool IsAlive => _healthComponent != null && _healthComponent.Health > 0;
         public Transform FirePoint => _firePoint;
         public Rigidbody2D Rigidbody => _rigidbody;
-        public float Speed => _characterConfig.Speed;
 
         private void Awake()
         {

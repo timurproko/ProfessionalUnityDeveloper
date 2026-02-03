@@ -5,7 +5,7 @@ namespace ShootEmUp
 {
     [RequireComponent(typeof(HealthComponent))]
     [RequireComponent(typeof(AttackComponent))]
-    public sealed class Enemy : MonoBehaviour
+    public sealed class Enemy : MonoBehaviour, IPoolable
     {
         [SerializeField] private HealthComponent _healthComponent;
         [SerializeField] private AttackComponent _attackComponent;
@@ -13,7 +13,7 @@ namespace ShootEmUp
         [SerializeField] private Transform _firePoint;
         [SerializeField] private Rigidbody2D _rigidbody;
         
-        [NonSerialized] public Player target;
+        [NonSerialized] public ITarget Target;
         
         public delegate void FireHandler(Vector2 position, Vector2 direction);
         public event FireHandler OnFire;
@@ -39,6 +39,20 @@ namespace ShootEmUp
             _attackComponent?.Reset();
         }
 
+        void IPoolable.OnGet()
+        {
+            _healthComponent?.Init(_characterConfig);
+            _attackComponent?.Reset();
+        }
+
+        void IPoolable.OnReturn()
+        {
+            Target = null;
+            _attackComponent?.SetActive(false);
+            _attackComponent?.Reset();
+            isPointReached = false;
+        }
+
         public void SetDestination(Vector2 endPoint)
         {
             destination = endPoint;
@@ -48,11 +62,11 @@ namespace ShootEmUp
 
         private void HandleAttackRequested()
         {
-            if (!target || target.HealthComponent.Health <= 0)
+            if (Target == null || (Target as UnityEngine.Object) == null || !Target.IsAlive)
                 return;
 
             Vector2 startPosition = _firePoint.position;
-            Vector2 vector = (Vector2)target.transform.position - startPosition;
+            Vector2 vector = Target.Position - startPosition;
             Vector2 direction = vector.normalized;
             OnFire?.Invoke(startPosition, direction);
         }
@@ -61,7 +75,7 @@ namespace ShootEmUp
         {
             if (isPointReached)
             {
-                _attackComponent?.SetActive(target && target.HealthComponent.Health > 0);
+                _attackComponent?.SetActive(Target != null && (Target as UnityEngine.Object) != null && Target.IsAlive);
             }
             else
             {

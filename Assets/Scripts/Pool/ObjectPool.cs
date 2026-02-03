@@ -38,6 +38,9 @@ namespace ShootEmUp
                 instance = Object.Instantiate(_prefab, _worldTransform);
             }
 
+            if (instance is IPoolable poolable)
+                poolable.OnGet();
+
             _active.Add(instance);
             return instance;
         }
@@ -46,6 +49,9 @@ namespace ShootEmUp
         {
             if (!instance || !_active.Remove(instance))
                 return;
+
+            if (instance is IPoolable poolable)
+                poolable.OnReturn();
 
             instance.transform.SetParent(_container);
             _pool.Enqueue(instance);

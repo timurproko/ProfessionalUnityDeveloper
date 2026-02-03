@@ -7,68 +7,73 @@ namespace ShootEmUp
 {
     public sealed class EnemyManager : MonoBehaviour
     {
-        private const int PoolPrewarmCount = 7;
-        private const int MaxActiveEnemies = 5;
-
         [SerializeField] private Transform[] spawnPositions;
         [SerializeField] private Transform[] attackPositions;
-        [SerializeField] private Player character;
+        [SerializeField] private Player _target;
         [SerializeField] private Transform worldTransform;
         [SerializeField] private Transform container;
         [SerializeField] private Enemy prefab;
         [SerializeField] private BulletManager bulletSystem;
+        [SerializeField] private LevelConfig levelConfig;
         [SerializeField] private BulletConfig bulletConfig;
 
         private ObjectPool<Enemy> enemyPool;
+        [SerializeField, ReadOnly] private int totalSpawned;
 
         private void Awake()
         {
-            this.enemyPool = new ObjectPool<Enemy>(
-                this.prefab,
-                this.container,
-                this.worldTransform,
-                PoolPrewarmCount
+            int prewarm = levelConfig.PoolPrewarmCount;
+            
+            enemyPool = new ObjectPool<Enemy>(
+                prefab,
+                container,
+                worldTransform,
+                prewarm
             );
         }
 
         private IEnumerator Start()
         {
-            while (true)
+            int maxPerWave = levelConfig.MaxEnemiesPerWave;
+            int totalToSpawn = levelConfig.TotalEnemiesToSpawn;
+
+            while (totalSpawned < totalToSpawn)
             {
                 yield return new WaitForSeconds(Random.Range(1, 2));
 
-                if (this.enemyPool.ActiveCount >= MaxActiveEnemies)
+                if (enemyPool.ActiveCount >= maxPerWave)
                     continue;
 
-                Enemy enemy = this.enemyPool.Get();
+                Enemy enemy = enemyPool.Get();
+                totalSpawned++;
 
-                Transform spawnPosition = this.RandomPoint(this.spawnPositions);
+                Transform spawnPosition = RandomPoint(spawnPositions);
                 enemy.transform.position = spawnPosition.position;
 
-                Transform attackPosition = this.RandomPoint(this.attackPositions);
+                Transform attackPosition = RandomPoint(attackPositions);
                 enemy.SetDestination(attackPosition.position);
-                enemy.target = this.character;
+                enemy.Target = _target;
 
-                enemy.OnFire += this.OnFire;
+                enemy.OnFire += OnFire;
             }
         }
 
         private void FixedUpdate()
         {
-            foreach (Enemy enemy in this.enemyPool.GetActiveSnapshot())
+            foreach (Enemy enemy in enemyPool.GetActiveSnapshot())
             {
                 if (enemy.HealthComponent.Health <= 0)
                 {
-                    enemy.OnFire -= this.OnFire;
-                    this.enemyPool.Return(enemy);
+                    enemy.OnFire -= OnFire;
+                    enemyPool.Return(enemy);
                 }
             }
         }
 
         private void OnFire(Vector2 position, Vector2 direction)
         {
-            BulletSpawnRequest request = this.bulletConfig.CreateRequest(position, direction);
-            this.bulletSystem.SpawnBullet(request);
+            BulletSpawnRequest request = bulletConfig.CreateRequest(position, direction);
+            bulletSystem.SpawnBullet(request);
         }
 
         private Transform RandomPoint(Transform[] points)
