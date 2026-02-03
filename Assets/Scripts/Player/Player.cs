@@ -16,11 +16,12 @@ namespace ShootEmUp
         [SerializeField] private BulletConfig _bulletConfig;
 
         public HealthComponent HealthComponent => _healthComponent;
+        public BulletConfig BulletConfig => _bulletConfig;
+        
         public Vector2 Position => transform.position;
         public float Speed => _characterConfig.Speed;
         public bool IsAlive => _healthComponent != null && _healthComponent.Health > 0;
         public Rigidbody2D Rigidbody => _rigidbody;
-        public BulletConfig GetBulletConfig() => _bulletConfig;
 
         public void Fire()
         {

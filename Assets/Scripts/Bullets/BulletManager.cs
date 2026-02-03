@@ -36,7 +36,7 @@ namespace ShootEmUp
             if (request.Requester == null)
                 return;
 
-            BulletConfig config = request.Requester.GetBulletConfig();
+            BulletConfig config = request.Requester.BulletConfig;
             
             if (config == null)
                 return;

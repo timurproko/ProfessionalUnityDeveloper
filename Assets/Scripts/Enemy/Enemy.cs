@@ -20,7 +20,7 @@ namespace ShootEmUp
         [NonSerialized] public ITarget Target;
         
         public HealthComponent HealthComponent => _healthComponent;
-        public BulletConfig GetBulletConfig() => _bulletConfig;
+        public BulletConfig BulletConfig => _bulletConfig;
 
         private Vector2 destination;
         private bool isPointReached;
