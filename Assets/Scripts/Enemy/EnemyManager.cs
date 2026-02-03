@@ -16,12 +16,12 @@ namespace ShootEmUp
         [SerializeField] private LevelsConfig levelsConfig;
         [SerializeField] private int poolPrewarmCount = 5;
 
-        private ObjectPool<Enemy> enemyPool;
-        [SerializeField, ReadOnly] private int totalSpawned;
+        private ObjectPool<Enemy> _enemyPool;
+        [SerializeField, ReadOnly] private int _totalSpawned;
 
         private void Awake()
         {
-            enemyPool = new ObjectPool<Enemy>(
+            _enemyPool = new ObjectPool<Enemy>(
                 prefab,
                 container,
                 worldTransform,
@@ -48,10 +48,10 @@ namespace ShootEmUp
                 {
                     yield return new WaitForSeconds(Random.Range(1, 2));
 
-                    if (enemyPool.ActiveCount >= maxPerWave)
+                    if (_enemyPool.ActiveCount >= maxPerWave)
                         continue;
 
-                    Enemy enemy = enemyPool.Get();
+                    Enemy enemy = _enemyPool.Get();
 
                     Transform spawnPosition = RandomPoint(spawnPositions);
                     enemy.transform.position = spawnPosition.position;
@@ -61,18 +61,18 @@ namespace ShootEmUp
                     enemy.Target = _target;
 
                     totalSpawnedThisLevel++;
-                    totalSpawned++;
+                    _totalSpawned++;
                 }
             }
         }
 
         private void FixedUpdate()
         {
-            foreach (Enemy enemy in enemyPool.GetActiveSnapshot())
+            foreach (Enemy enemy in _enemyPool.GetActiveSnapshot())
             {
                 if (enemy.HealthComponent.Health <= 0)
                 {
-                    enemyPool.Return(enemy);
+                    _enemyPool.Return(enemy);
                 }
             }
         }

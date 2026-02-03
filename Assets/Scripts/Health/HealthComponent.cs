@@ -12,25 +12,25 @@ namespace ShootEmUp
 
         public int Health
         {
-            get => _health;
+            get => _currentHealth;
             set
             {
-                _health = value;
-                OnHealthChanged?.Invoke(this, _health);
-                if (_health <= 0)
+                _currentHealth = value;
+                OnHealthChanged?.Invoke(this, _currentHealth);
+                if (_currentHealth <= 0)
                     OnHealthEmpty?.Invoke(this);
             }
         }
         
         private CharacterConfig _characterConfig;
-        [SerializeField, ReadOnly] private int _health;
+        [SerializeField, ReadOnly] private int _currentHealth;
 
         public void Init(CharacterConfig characterConfig)
         {
             _characterConfig = characterConfig;
             
             if (_characterConfig != null)
-                _health = _characterConfig.DefaultHealth;
+                _currentHealth = _characterConfig.DefaultHealth;
         }
     }
 }

@@ -5,7 +5,7 @@ namespace ShootEmUp
 {
     [RequireComponent(typeof(HealthComponent))]
     [RequireComponent(typeof(AttackComponent))]
-    public sealed class Enemy : MonoBehaviour, IPoolable, IBulletConfigProvider
+    public sealed class Enemy : MonoBehaviour, IPoolable, IBulletProvider
     {
         [Space]
         [SerializeField] private HealthComponent _healthComponent;
@@ -20,7 +20,7 @@ namespace ShootEmUp
         [NonSerialized] public ITarget Target;
         
         public HealthComponent HealthComponent => _healthComponent;
-        BulletConfig IBulletConfigProvider.GetBulletConfig() => _bulletConfig;
+        BulletConfig IBulletProvider.GetBulletConfig() => _bulletConfig;
 
         private Vector2 destination;
         private bool isPointReached;

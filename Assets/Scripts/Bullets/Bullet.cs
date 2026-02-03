@@ -7,15 +7,15 @@ namespace ShootEmUp
     {
         public event Action<Bullet, Collision2D> OnCollisionEntered;
 
-        [NonSerialized] public bool isPlayer;
-        [NonSerialized] public int damage;
+        [NonSerialized] public bool _isPlayer;
+        [NonSerialized] public int _damage;
         
-        [SerializeField] public new Rigidbody2D rigidbody2D;
-        [SerializeField] public SpriteRenderer spriteRenderer;
+        [SerializeField] public Rigidbody2D _rigidbody;
+        [SerializeField] public SpriteRenderer _spriteRenderer;
 
         private void OnCollisionEnter2D(Collision2D collision)
         {
-            this.OnCollisionEntered?.Invoke(this, collision);
+            OnCollisionEntered?.Invoke(this, collision);
         }
     }
 }

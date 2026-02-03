@@ -3,7 +3,7 @@ using UnityEngine;
 namespace ShootEmUp
 {
     [RequireComponent(typeof(HealthComponent))]
-    public sealed class Player : MonoBehaviour, ITarget, IBulletConfigProvider
+    public sealed class Player : MonoBehaviour, ITarget, IBulletProvider
     {
         [Space]
         [SerializeField] private PlayerController _playerController;
@@ -17,7 +17,7 @@ namespace ShootEmUp
 
         public HealthComponent HealthComponent => _healthComponent;
         public BulletConfig BulletConfig => _bulletConfig;
-        BulletConfig IBulletConfigProvider.GetBulletConfig() => _bulletConfig;
+        BulletConfig IBulletProvider.GetBulletConfig() => _bulletConfig;
         public Vector2 Position => transform.position;
         public float Speed => _characterConfig.Speed;
         public bool IsAlive => _healthComponent != null && _healthComponent.Health > 0;

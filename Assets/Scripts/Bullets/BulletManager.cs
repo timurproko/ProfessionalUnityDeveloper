@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -8,19 +7,19 @@ namespace ShootEmUp
     {
         private const int PoolPrewarmCount = 10;
 
-        [SerializeField] public Bullet prefab;
-        [SerializeField] public Transform worldTransform;
-        [SerializeField] private LevelBounds levelBounds;
-        [SerializeField] private Transform container;
+        [SerializeField] public Bullet _prefab;
+        [SerializeField] public Transform _worldTransform;
+        [SerializeField] private LevelBounds _levelBounds;
+        [SerializeField] private Transform _container;
 
         private ObjectPool<Bullet> bulletPool;
 
         private void Awake()
         {
             bulletPool = new ObjectPool<Bullet>(
-                prefab,
-                container,
-                worldTransform,
+                _prefab,
+                _container,
+                _worldTransform,
                 PoolPrewarmCount
             );
 
@@ -38,11 +37,20 @@ namespace ShootEmUp
                 return;
 
             BulletConfig config = request.Requester.GetBulletConfig();
+            
             if (config == null)
                 return;
 
             BulletSpawnRequest spawnRequest = config.CreateRequest(request.Position, request.Direction);
-            SpawnBullet(spawnRequest);
+            
+            SpawnBullet(
+                spawnRequest.Position,
+                spawnRequest.Velocity,
+                spawnRequest.Color,
+                spawnRequest.PhysicsLayer,
+                spawnRequest.Damage,
+                spawnRequest.IsPlayer
+            );
         }
 
         private void FixedUpdate()
@@ -51,44 +59,32 @@ namespace ShootEmUp
             for (int i = 0; i < activeBullets.Count; i++)
             {
                 Bullet bullet = activeBullets[i];
-                if (!levelBounds.InBounds(bullet.transform.position))
+                if (!_levelBounds.InBounds(bullet.transform.position))
                 {
                     ReturnBullet(bullet);
                 }
             }
         }
 
-        public void SpawnBullet(BulletSpawnRequest request)
-        {
-            SpawnBullet(
-                request.Position,
-                request.Velocity,
-                request.Color,
-                request.PhysicsLayer,
-                request.Damage,
-                request.IsPlayer
-            );
-        }
-
-        public void SpawnBullet(
-            Vector2 position,
-            Vector2 velocity,
+        private void SpawnBullet(
+            Vector2 position, 
+            Vector2 velocity, 
             Color color,
-            int physicsLayer,
-            int damage,
+            int physicsLayer, 
+            int damage, 
             bool isPlayer
         )
         {
             Bullet bullet = bulletPool.Get();
 
             bullet.transform.position = position;
-            bullet.spriteRenderer.color = color;
+            bullet._spriteRenderer.color = color;
             bullet.gameObject.layer = physicsLayer;
-            bullet.damage = damage;
-            bullet.isPlayer = isPlayer;
-            bullet.rigidbody2D.linearVelocity = velocity;
-
-            bullet.OnCollisionEntered += this.OnBulletCollision;
+            bullet._damage = damage;
+            bullet._isPlayer = isPlayer;
+            bullet._rigidbody.linearVelocity = velocity;
+            
+            bullet.OnCollisionEntered += OnBulletCollision;
         }
 
         private void OnBulletCollision(Bullet bullet, Collision2D collision)
@@ -97,24 +93,24 @@ namespace ShootEmUp
             ReturnBullet(bullet);
         }
 
-        private void ReturnBullet(Bullet bullet)
-        {
-            bullet.OnCollisionEntered -= this.OnBulletCollision;
-            bulletPool.Return(bullet);
-        }
-
         private void DealDamage(Bullet bullet, GameObject other)
         {
-            int damage = bullet.damage;
+            int damage = bullet._damage;
             if (damage <= 0)
                 return;
 
-            if (!other.TryGetComponent(out IDamageable damageable) || bullet.isPlayer == damageable.IsPlayer)
+            if (!other.TryGetComponent(out IDamageable damageable) || bullet._isPlayer == damageable.IsPlayer)
                 return;
             if (damageable.Health <= 0)
                 return;
 
             damageable.Health = Mathf.Max(0, damageable.Health - damage);
+        }
+
+        private void ReturnBullet(Bullet bullet)
+        {
+            bullet.OnCollisionEntered -= OnBulletCollision;
+            bulletPool.Return(bullet);
         }
     }
 }

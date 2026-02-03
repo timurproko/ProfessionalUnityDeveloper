@@ -7,7 +7,7 @@ namespace ShootEmUp
     {
         public static event Action<FireRequest> OnFireRequested;
 
-        public static void Raise(IBulletConfigProvider requester, Vector2 position, Vector2 direction)
+        public static void Raise(IBulletProvider requester, Vector2 position, Vector2 direction)
         {
             var request = new FireRequest(requester, position, direction);
             OnFireRequested?.Invoke(request);

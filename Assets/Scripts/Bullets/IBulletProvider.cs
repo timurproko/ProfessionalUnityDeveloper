@@ -1,6 +1,6 @@
 namespace ShootEmUp
 {
-    public interface IBulletConfigProvider
+    public interface IBulletProvider
     {
         BulletConfig GetBulletConfig();
     }
