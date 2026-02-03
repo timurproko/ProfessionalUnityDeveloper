@@ -4,8 +4,6 @@ namespace ShootEmUp
 {
     public sealed class PlayerController : MonoBehaviour
     {
-        [SerializeField] private BulletManager _bulletManager;
-
         private Player _character;
         private bool _fireRequired;
         private float _moveDirection;
@@ -33,10 +31,7 @@ namespace ShootEmUp
         {
             if (_fireRequired)
             {
-                Vector2 position = _character.FirePoint.position;
-                Vector2 direction = _character.FirePoint.rotation * Vector3.up;
-                BulletSpawnRequest request = _character.BulletConfig.CreateRequest(position, direction);
-                _bulletManager.SpawnBullet(request);
+                _character.Fire();
                 _fireRequired = false;
             }
             

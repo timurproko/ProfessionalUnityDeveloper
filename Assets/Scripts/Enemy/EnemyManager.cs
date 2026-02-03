@@ -13,7 +13,6 @@ namespace ShootEmUp
         [SerializeField] private Transform worldTransform;
         [SerializeField] private Transform container;
         [SerializeField] private Enemy prefab;
-        [SerializeField] private BulletManager bulletSystem;
         [SerializeField] private LevelsConfig levelsConfig;
         [SerializeField] private int poolPrewarmCount = 5;
 
@@ -61,8 +60,6 @@ namespace ShootEmUp
                     enemy.SetDestination(attackPosition.position);
                     enemy.Target = _target;
 
-                    enemy.OnFire += OnFire;
-
                     totalSpawnedThisLevel++;
                     totalSpawned++;
                 }
@@ -75,15 +72,9 @@ namespace ShootEmUp
             {
                 if (enemy.HealthComponent.Health <= 0)
                 {
-                    enemy.OnFire -= OnFire;
                     enemyPool.Return(enemy);
                 }
             }
-        }
-
-        private void OnFire(BulletSpawnRequest request)
-        {
-            bulletSystem.SpawnBullet(request);
         }
 
         private Transform RandomPoint(Transform[] points)

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -22,6 +23,26 @@ namespace ShootEmUp
                 worldTransform,
                 PoolPrewarmCount
             );
+
+            FireRequestChannel.OnFireRequested += HandleFireRequest;
+        }
+
+        private void OnDestroy()
+        {
+            FireRequestChannel.OnFireRequested -= HandleFireRequest;
+        }
+
+        private void HandleFireRequest(FireRequest request)
+        {
+            if (request.Requester == null)
+                return;
+
+            BulletConfig config = request.Requester.GetBulletConfig();
+            if (config == null)
+                return;
+
+            BulletSpawnRequest spawnRequest = config.CreateRequest(request.Position, request.Direction);
+            SpawnBullet(spawnRequest);
         }
 
         private void FixedUpdate()

@@ -421,9 +421,7 @@ MonoBehaviour:
   worldTransform: {fileID: 1683128698}
   container: {fileID: 178513672}
   prefab: {fileID: 102605417607457000, guid: 87fe189881a524806800482ac8eaaa83, type: 3}
-  bulletSystem: {fileID: 363245577}
   levelsConfig: {fileID: 11400000, guid: 9815c8353182d0f47b91fd5cf2fd8a3b, type: 2}
-  bulletConfig: {fileID: 11400000, guid: a4a66565b2ed66f498dbaca12dc2c159, type: 2}
   poolPrewarmCount: 5
   totalSpawned: 0
 --- !u!1 &883274639
@@ -1187,25 +1185,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6610591536227522620, guid: 9699e7e809fd44b2bbf3d30c951ecbd2,
         type: 3}
-      propertyPath: _bulletConfig
-      value: 
-      objectReference: {fileID: 11400000, guid: 39d44f119e624c843a533735dad5cf31,
-        type: 2}
-    - target: {fileID: 6610591536227522620, guid: 9699e7e809fd44b2bbf3d30c951ecbd2,
-        type: 3}
-      propertyPath: bulletManager
-      value: 
-      objectReference: {fileID: 363245577}
-    - target: {fileID: 6610591536227522620, guid: 9699e7e809fd44b2bbf3d30c951ecbd2,
-        type: 3}
       propertyPath: _bulletManager
       value: 
       objectReference: {fileID: 363245577}
     - target: {fileID: 6799125967610205483, guid: 9699e7e809fd44b2bbf3d30c951ecbd2,
         type: 3}
-      propertyPath: _playerController
+      propertyPath: _fireRequestChannel
       value: 
-      objectReference: {fileID: 4414282821800802411}
+      objectReference: {fileID: 11400000, guid: a4e7ea314bbc85f4f8c72ab9050b1a2b,
+        type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -1318,18 +1306,6 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 558b312fd53c491ab69f3e55255aae3c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &4414282821800802411 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 6610591536227522620, guid: 9699e7e809fd44b2bbf3d30c951ecbd2,
-    type: 3}
-  m_PrefabInstance: {fileID: 3926786964592264468}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c57ed31af8d94ec3b11df7e2b588d40f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &4788406047096451828

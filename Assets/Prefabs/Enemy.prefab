@@ -173,10 +173,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _healthComponent: {fileID: 8920942286437506176}
   _attackComponent: {fileID: -1996649804710986659}
-  _characterConfig: {fileID: 11400000, guid: 9ae2ffeaa969f754e8d50cfd9c2adb48, type: 2}
-  _bulletConfig: {fileID: 11400000, guid: a4a66565b2ed66f498dbaca12dc2c159, type: 2}
   _firePoint: {fileID: 3195880656587174614}
   _rigidbody: {fileID: 659620479434099170}
+  _characterConfig: {fileID: 11400000, guid: 9ae2ffeaa969f754e8d50cfd9c2adb48, type: 2}
+  _bulletConfig: {fileID: 11400000, guid: a4a66565b2ed66f498dbaca12dc2c159, type: 2}
+  _fireRequestChannel: {fileID: 11400000, guid: a4e7ea314bbc85f4f8c72ab9050b1a2b,
+    type: 2}
 --- !u!114 &8920942286437506176
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -202,7 +204,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6d58a2d91350c414e8fba2732b610e4b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ShootEmUp.AttackCountdownComponent
-  _interval: 1
+  _attackInterval: 1
 --- !u!1 &2239154907127902911
 GameObject:
   m_ObjectHideFlags: 0

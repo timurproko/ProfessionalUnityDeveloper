@@ -5,7 +5,7 @@ namespace ShootEmUp
 {
     [RequireComponent(typeof(HealthComponent))]
     [RequireComponent(typeof(AttackComponent))]
-    public sealed class Enemy : MonoBehaviour, IPoolable
+    public sealed class Enemy : MonoBehaviour, IPoolable, IBulletConfigProvider
     {
         [Space]
         [SerializeField] private HealthComponent _healthComponent;
@@ -19,10 +19,8 @@ namespace ShootEmUp
         
         [NonSerialized] public ITarget Target;
         
-        public delegate void FireHandler(BulletSpawnRequest request);
-        public event FireHandler OnFire;
-        
         public HealthComponent HealthComponent => _healthComponent;
+        BulletConfig IBulletConfigProvider.GetBulletConfig() => _bulletConfig;
 
         private Vector2 destination;
         private bool isPointReached;
@@ -68,15 +66,13 @@ namespace ShootEmUp
         {
             if (Target == null || (Target as UnityEngine.Object) == null || !Target.IsAlive)
                 return;
-
             if (_bulletConfig == null)
                 return;
 
             Vector2 startPosition = _firePoint.position;
             Vector2 vector = Target.Position - startPosition;
             Vector2 direction = vector.normalized;
-            BulletSpawnRequest request = _bulletConfig.CreateRequest(startPosition, direction);
-            OnFire?.Invoke(request);
+            FireRequestChannel.Raise(this, startPosition, direction);
         }
 
         private void FixedUpdate()

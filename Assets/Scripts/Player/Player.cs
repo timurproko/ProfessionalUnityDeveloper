@@ -3,7 +3,7 @@ using UnityEngine;
 namespace ShootEmUp
 {
     [RequireComponent(typeof(HealthComponent))]
-    public sealed class Player : MonoBehaviour, ITarget
+    public sealed class Player : MonoBehaviour, ITarget, IBulletConfigProvider
     {
         [Space]
         [SerializeField] private PlayerController _playerController;
@@ -17,11 +17,21 @@ namespace ShootEmUp
 
         public HealthComponent HealthComponent => _healthComponent;
         public BulletConfig BulletConfig => _bulletConfig;
+        BulletConfig IBulletConfigProvider.GetBulletConfig() => _bulletConfig;
         public Vector2 Position => transform.position;
         public float Speed => _characterConfig.Speed;
         public bool IsAlive => _healthComponent != null && _healthComponent.Health > 0;
         public Transform FirePoint => _firePoint;
         public Rigidbody2D Rigidbody => _rigidbody;
+
+        public void Fire()
+        {
+            if (_bulletConfig == null)
+                return;
+            Vector2 position = _firePoint.position;
+            Vector2 direction = (Vector2)(_firePoint.rotation * Vector3.up);
+            FireRequestChannel.Raise(this, position, direction);
+        }
 
         private void Awake()
         {
