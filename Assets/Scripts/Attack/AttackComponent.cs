@@ -12,16 +12,6 @@ namespace ShootEmUp
         private float currentTime;
         private bool isActive;
 
-        public void SetActive(bool active)
-        {
-            isActive = active;
-        }
-
-        public void Reset()
-        {
-            currentTime = _attackInterval;
-        }
-
         private void FixedUpdate()
         {
             if (!isActive)
@@ -33,6 +23,16 @@ namespace ShootEmUp
                 OnFireRequested?.Invoke();
                 currentTime += _attackInterval;
             }
+        }
+
+        public void Reset()
+        {
+            currentTime = _attackInterval;
+        }
+
+        public void SetActive(bool active)
+        {
+            isActive = active;
         }
     }
 }

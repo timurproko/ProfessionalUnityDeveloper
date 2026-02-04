@@ -77,7 +77,7 @@ namespace ShootEmUp
             }
             if (_enemyPool.ActiveCount >= level.MaxEnemiesPerWave)
                 return false;
-            if (!TryGetAvailableAttackPositionIndex(out int attackIndex))
+            if (!TryGetAvailableAttackPosition(out int attackIndex))
                 return false;
 
             SpawnEnemy(attackIndex);
@@ -95,25 +95,45 @@ namespace ShootEmUp
             _attackPositionIndex[enemy] = attackPositionIndex;
         }
 
-        private bool TryGetAvailableAttackPositionIndex(out int index)
+        private bool TryGetAvailableAttackPosition(out int index)
         {
             index = -1;
             if (attackPositions == null || attackPositions.Length == 0)
                 return false;
 
-            var occupied = new HashSet<int>(_attackPositionIndex.Values);
-            var available = new List<int>();
+            int availableCount = 0;
             for (int i = 0; i < attackPositions.Length; i++)
             {
-                if (attackPositions[i] != null && !occupied.Contains(i))
-                    available.Add(i);
+                if (attackPositions[i] != null && !IsAttackPositionOccupied(i))
+                    availableCount++;
             }
 
-            if (available.Count == 0)
+            if (availableCount == 0)
                 return false;
 
-            index = available[Random.Range(0, available.Count)];
-            return true;
+            int pick = Random.Range(0, availableCount);
+            for (int i = 0; i < attackPositions.Length; i++)
+            {
+                if (attackPositions[i] == null || IsAttackPositionOccupied(i))
+                    continue;
+                if (pick-- == 0)
+                {
+                    index = i;
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        private bool IsAttackPositionOccupied(int positionIndex)
+        {
+            foreach (int occupiedIndex in _attackPositionIndex.Values)
+            {
+                if (occupiedIndex == positionIndex)
+                    return true;
+            }
+            return false;
         }
 
         private Transform RandomPoint(Transform[] points)

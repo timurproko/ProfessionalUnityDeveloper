@@ -422,7 +422,6 @@ MonoBehaviour:
   _container: {fileID: 178513672}
   _prefab: {fileID: 102605417607457000, guid: 87fe189881a524806800482ac8eaaa83, type: 3}
   _levelsConfig: {fileID: 11400000, guid: 9815c8353182d0f47b91fd5cf2fd8a3b, type: 2}
-  _poolPrewarmCount: 5
   _totalSpawned: 0
 --- !u!1 &883274639
 GameObject:
@@ -1209,7 +1208,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3951702117947426122}
   m_Layer: 0
-  m_Name: '[System]'
+  m_Name: '[Systems]'
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

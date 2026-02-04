@@ -30,11 +30,6 @@ namespace ShootEmUp
             _attackComponent.OnFireRequested += HandleAttackRequested;
         }
 
-        private void OnDestroy()
-        {
-            _attackComponent.OnFireRequested -= HandleAttackRequested;
-        }
-
         private void FixedUpdate()
         {
             if (isPointReached)
@@ -57,6 +52,16 @@ namespace ShootEmUp
             }
         }
 
+        private void OnDestroy()
+        {
+            _attackComponent.OnFireRequested -= HandleAttackRequested;
+        }
+
+        public void Reset()
+        {
+            _attackComponent?.Reset();
+        }
+
         public void SetTarget(ITarget target)
         {
             _target = target;
@@ -67,11 +72,6 @@ namespace ShootEmUp
             destination = endPoint;
             isPointReached = false;
             _attackComponent?.SetActive(false);
-        }
-
-        public void Reset()
-        {
-            _attackComponent?.Reset();
         }
 
         void IPoolable.OnGet()

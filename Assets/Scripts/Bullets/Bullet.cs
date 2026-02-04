@@ -16,6 +16,11 @@ namespace ShootEmUp
         private bool _isPlayer;
         private int _damage;
 
+        private void OnCollisionEnter2D(Collision2D collision)
+        {
+            OnCollisionEntered?.Invoke(this, collision);
+        }
+
         public void Launch(Vector2 position, int physicsLayer, Vector2 velocity, Color color, int damage, bool isPlayer)
         {
             transform.position = position;
@@ -24,11 +29,6 @@ namespace ShootEmUp
             _spriteRenderer.color = color;
             _damage = damage;
             _isPlayer = isPlayer;
-        }
-        
-        private void OnCollisionEnter2D(Collision2D collision)
-        {
-            OnCollisionEntered?.Invoke(this, collision);
         }
     }
 }

@@ -26,6 +26,19 @@ namespace ShootEmUp
             FireRequestChannel.OnFireRequested += HandleFireRequest;
         }
 
+        private void Update()
+        {
+            IReadOnlyList<Bullet> activeBullets = bulletPool.GetActiveSnapshot();
+            for (int i = 0; i < activeBullets.Count; i++)
+            {
+                Bullet bullet = activeBullets[i];
+                if (!_levelBounds.InBounds(bullet.transform.position))
+                {
+                    ReturnBullet(bullet);
+                }
+            }
+        }
+
         private void OnDestroy()
         {
             FireRequestChannel.OnFireRequested -= HandleFireRequest;
@@ -41,19 +54,6 @@ namespace ShootEmUp
                 request.Damage,
                 request.IsPlayer
             );
-        }
-
-        private void Update()
-        {
-            IReadOnlyList<Bullet> activeBullets = bulletPool.GetActiveSnapshot();
-            for (int i = 0; i < activeBullets.Count; i++)
-            {
-                Bullet bullet = activeBullets[i];
-                if (!_levelBounds.InBounds(bullet.transform.position))
-                {
-                    ReturnBullet(bullet);
-                }
-            }
         }
 
         private void SpawnBullet(
