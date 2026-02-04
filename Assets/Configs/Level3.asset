@@ -13,4 +13,4 @@ MonoBehaviour:
   m_Name: Level3
   m_EditorClassIdentifier: Assembly-CSharp::ShootEmUp.LevelConfig
   totalEnemiesToSpawn: 15
-  maxEnemiesPerWave: 5
+  maxEnemiesPerWave: 6

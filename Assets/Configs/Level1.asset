@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0e915f5eb8a97364bacb7e0b621e76f1, type: 3}
   m_Name: Level1
   m_EditorClassIdentifier: Assembly-CSharp::ShootEmUp.LevelConfig
-  totalEnemiesToSpawn: 5
+  totalEnemiesToSpawn: 3
   maxEnemiesPerWave: 1

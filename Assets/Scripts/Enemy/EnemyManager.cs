@@ -6,6 +6,7 @@ namespace ShootEmUp
 {
     public sealed class EnemyManager : MonoBehaviour
     {
+        [Header("Setup")]
         [SerializeField] private Transform[] spawnPositions;
         [SerializeField] private Transform[] attackPositions;
         [SerializeField] private Player _target;
@@ -18,8 +19,9 @@ namespace ShootEmUp
         private const float SpawnDelayMin = 1f;
         private const float SpawnDelayMax = 2f;
 
-        private readonly Dictionary<Enemy, int> _attackPositionIndex = new();
-        
+        private readonly Dictionary<Enemy, int> _enemyToAttackIndex = new();
+        private bool[] _occupiedAttackSlots;
+
         private ObjectPool<Enemy> _enemyPool;
         private int _currentLevelIndex;
         private int _totalSpawnedThisLevel;
@@ -27,70 +29,72 @@ namespace ShootEmUp
 
         [Header("Debug")]
         [SerializeField, ReadOnly] private int _totalSpawned;
-        [SerializeField, ReadOnly] private int _currentLevel;
-        [SerializeField, ReadOnly] private int _remainingToSpawn;
 
         private void Awake()
         {
-            _enemyPool = new ObjectPool<Enemy>(
-                _prefab,
-                _container,
-                _worldTransform,
-                PoolPrewarmCount
-            );
+            _enemyPool = new ObjectPool<Enemy>(_prefab, _container, _worldTransform, PoolPrewarmCount);
+            _occupiedAttackSlots = new bool[attackPositions?.Length ?? 0];
         }
 
         private void Update()
         {
             ReturnDeadEnemies();
+
+            if (TryAdvanceLevel())
+                return;
+
             if (TrySpawnEnemy())
                 _nextSpawnTime = Time.time + Random.Range(SpawnDelayMin, SpawnDelayMax);
-            RefreshDebugFields();
         }
 
-        private void RefreshDebugFields()
+        private bool TryAdvanceLevel()
         {
-            _currentLevel = _currentLevelIndex + 1;
-            LevelConfig level = _levelsConfig != null ? _levelsConfig.GetLevel(_currentLevelIndex) : null;
-            _remainingToSpawn = level != null
-                ? Mathf.Max(0, level.TotalEnemiesToSpawn - _totalSpawnedThisLevel)
-                : 0;
+            if (!TryGetCurrentLevel(out var level))
+                return false;
+
+            bool spawnedAll = _totalSpawnedThisLevel >= level.TotalEnemiesToSpawn;
+            bool allDead = _enemyPool.ActiveCount == 0;
+
+            if (!spawnedAll || !allDead)
+                return false;
+
+            _currentLevelIndex++;
+            _totalSpawnedThisLevel = 0;
+            return true;
         }
 
         private void ReturnDeadEnemies()
         {
             foreach (Enemy enemy in _enemyPool.GetActiveSnapshot())
             {
-                if (!enemy.IsAlive)
+                if (enemy.IsAlive)
+                    continue;
+
+                if (_enemyToAttackIndex.Remove(enemy, out int slot))
                 {
-                    _attackPositionIndex.Remove(enemy);
-                    _enemyPool.Return(enemy);
+                    if (slot >= 0 && slot < _occupiedAttackSlots.Length)
+                        _occupiedAttackSlots[slot] = false;
                 }
+
+                _enemyPool.Return(enemy);
             }
         }
 
         private bool TrySpawnEnemy()
         {
-            if (_levelsConfig == null || _levelsConfig.LevelCount == 0)
+            if (!TryGetCurrentLevel(out var level))
                 return false;
-            if (_currentLevelIndex >= _levelsConfig.LevelCount)
-                return false;
+
             if (Time.time < _nextSpawnTime)
                 return false;
 
-            LevelConfig level = _levelsConfig.GetLevel(_currentLevelIndex);
-            if (level == null)
+            if (_totalSpawnedThisLevel >= level.TotalEnemiesToSpawn)
                 return false;
 
-            if (_totalSpawnedThisLevel >= level.TotalEnemiesToSpawn)
-            {
-                _currentLevelIndex++;
-                _totalSpawnedThisLevel = 0;
-                return false;
-            }
             if (_enemyPool.ActiveCount >= level.MaxEnemiesPerWave)
                 return false;
-            if (!TryGetAvailableAttackPosition(out int attackIndex))
+
+            if (!TryPickFreeAttackSlot(out int attackIndex))
                 return false;
 
             SpawnEnemy(attackIndex);
@@ -99,36 +103,52 @@ namespace ShootEmUp
             return true;
         }
 
-        private void SpawnEnemy(int attackPositionIndex)
+        private bool TryGetCurrentLevel(out LevelConfig level)
         {
-            Enemy enemy = _enemyPool.Get();
-            enemy.transform.position = RandomPoint(spawnPositions).position;
-            enemy.SetDestination(attackPositions[attackPositionIndex].position);
-            enemy.SetTarget(_target);
-            _attackPositionIndex[enemy] = attackPositionIndex;
+            level = null;
+            if (_levelsConfig == null || _levelsConfig.LevelCount == 0)
+                return false;
+            if (_currentLevelIndex >= _levelsConfig.LevelCount)
+                return false;
+
+            level = _levelsConfig.GetLevel(_currentLevelIndex);
+            return level != null;
         }
 
-        private bool TryGetAvailableAttackPosition(out int index)
+        private void SpawnEnemy(int attackIndex)
+        {
+            Enemy enemy = _enemyPool.Get();
+
+            enemy.transform.position = RandomPoint(spawnPositions).position;
+            enemy.SetDestination(attackPositions[attackIndex].position);
+            enemy.SetTarget(_target);
+
+            _enemyToAttackIndex[enemy] = attackIndex;
+            _occupiedAttackSlots[attackIndex] = true;
+        }
+
+        private bool TryPickFreeAttackSlot(out int index)
         {
             index = -1;
             if (attackPositions == null || attackPositions.Length == 0)
                 return false;
 
-            int availableCount = 0;
+            int freeCount = 0;
             for (int i = 0; i < attackPositions.Length; i++)
             {
-                if (attackPositions[i] != null && !IsAttackPositionOccupied(i))
-                    availableCount++;
+                if (attackPositions[i] != null && !_occupiedAttackSlots[i])
+                    freeCount++;
             }
 
-            if (availableCount == 0)
+            if (freeCount == 0)
                 return false;
 
-            int pick = Random.Range(0, availableCount);
+            int pick = Random.Range(0, freeCount);
             for (int i = 0; i < attackPositions.Length; i++)
             {
-                if (attackPositions[i] == null || IsAttackPositionOccupied(i))
+                if (attackPositions[i] == null || _occupiedAttackSlots[i])
                     continue;
+
                 if (pick-- == 0)
                 {
                     index = i;
@@ -136,16 +156,6 @@ namespace ShootEmUp
                 }
             }
 
-            return false;
-        }
-
-        private bool IsAttackPositionOccupied(int positionIndex)
-        {
-            foreach (int occupiedIndex in _attackPositionIndex.Values)
-            {
-                if (occupiedIndex == positionIndex)
-                    return true;
-            }
             return false;
         }
 
