@@ -36,7 +36,7 @@ namespace ShootEmUp
         public void Init(Player character)
         {
             _character = character;
-            _character.HealthComponent.OnHealthEmpty += _ => Time.timeScale = 0;
+            _character.HealthComponent.OnHealthEmpty += () => Time.timeScale = 0;
         }
     }
 }

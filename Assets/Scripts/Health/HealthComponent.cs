@@ -3,9 +3,9 @@ using UnityEngine;
 
 namespace ShootEmUp
 {
-    public sealed class HealthComponent : MonoBehaviour, IDamageable
+    public sealed class HealthComponent : MonoBehaviour
     {
-        public event Action<IDamageable> OnHealthEmpty;
+        public event Action OnHealthEmpty;
         
         public bool IsPlayer => _characterConfig != null && _characterConfig.IsPlayer;
 
@@ -16,7 +16,7 @@ namespace ShootEmUp
             {
                 _currentHealth = value;
                 if (_currentHealth <= 0)
-                    OnHealthEmpty?.Invoke(this);
+                    OnHealthEmpty?.Invoke();
             }
         }
         
