@@ -64,7 +64,7 @@ namespace ShootEmUp
 
         private void HandleAttackRequested()
         {
-            if (Target == null || (Target as UnityEngine.Object) == null || !Target.IsAlive)
+            if (Target == null || !Target.IsAlive)
                 return;
             if (_bulletConfig == null)
                 return;
@@ -79,7 +79,7 @@ namespace ShootEmUp
         {
             if (isPointReached)
             {
-                _attackComponent?.SetActive(Target != null && (Target as UnityEngine.Object) != null && Target.IsAlive);
+                _attackComponent?.SetActive(Target != null && Target.IsAlive);
             }
             else
             {

@@ -76,14 +76,7 @@ namespace ShootEmUp
         )
         {
             Bullet bullet = bulletPool.Get();
-
-            bullet.transform.position = position;
-            bullet._spriteRenderer.color = color;
-            bullet.gameObject.layer = physicsLayer;
-            bullet._damage = damage;
-            bullet._isPlayer = isPlayer;
-            bullet._rigidbody.linearVelocity = velocity;
-            
+            bullet.Launch(position, physicsLayer, velocity, color, damage, isPlayer);
             bullet.OnCollisionEntered += OnBulletCollision;
         }
 
@@ -95,11 +88,11 @@ namespace ShootEmUp
 
         private void DealDamage(Bullet bullet, GameObject other)
         {
-            int damage = bullet._damage;
+            int damage = bullet.Damage;
             if (damage <= 0)
                 return;
 
-            if (!other.TryGetComponent(out IDamageable damageable) || bullet._isPlayer == damageable.IsPlayer)
+            if (!other.TryGetComponent(out IDamageable damageable) || bullet.IsPlayer == damageable.IsPlayer)
                 return;
             if (damageable.Health <= 0)
                 return;
