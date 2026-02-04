@@ -25,7 +25,10 @@ namespace ShootEmUp
         private int _totalSpawnedThisLevel;
         private float _nextSpawnTime;
 
+        [Header("Debug")]
         [SerializeField, ReadOnly] private int _totalSpawned;
+        [SerializeField, ReadOnly] private int _currentLevel;
+        [SerializeField, ReadOnly] private int _remainingToSpawn;
 
         private void Awake()
         {
@@ -42,6 +45,16 @@ namespace ShootEmUp
             ReturnDeadEnemies();
             if (TrySpawnEnemy())
                 _nextSpawnTime = Time.time + Random.Range(SpawnDelayMin, SpawnDelayMax);
+            RefreshDebugFields();
+        }
+
+        private void RefreshDebugFields()
+        {
+            _currentLevel = _currentLevelIndex + 1;
+            LevelConfig level = _levelsConfig != null ? _levelsConfig.GetLevel(_currentLevelIndex) : null;
+            _remainingToSpawn = level != null
+                ? Mathf.Max(0, level.TotalEnemiesToSpawn - _totalSpawnedThisLevel)
+                : 0;
         }
 
         private void ReturnDeadEnemies()
