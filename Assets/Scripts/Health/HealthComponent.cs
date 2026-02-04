@@ -5,7 +5,6 @@ namespace ShootEmUp
 {
     public sealed class HealthComponent : MonoBehaviour, IDamageable
     {
-        public event Action<IDamageable, int> OnHealthChanged;
         public event Action<IDamageable> OnHealthEmpty;
         
         public bool IsPlayer => _characterConfig != null && _characterConfig.IsPlayer;
@@ -16,7 +15,6 @@ namespace ShootEmUp
             set
             {
                 _currentHealth = value;
-                OnHealthChanged?.Invoke(this, _currentHealth);
                 if (_currentHealth <= 0)
                     OnHealthEmpty?.Invoke(this);
             }

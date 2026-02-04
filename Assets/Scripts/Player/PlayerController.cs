@@ -11,7 +11,6 @@ namespace ShootEmUp
         private void Update()
         {
             if (Input.GetKeyDown(KeyCode.Space))
-
                 _fireRequired = true;
 
             if (Input.GetKey(KeyCode.LeftArrow))
