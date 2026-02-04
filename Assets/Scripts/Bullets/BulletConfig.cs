@@ -10,18 +10,11 @@ namespace ShootEmUp
         [SerializeField, Layer] private int _physicsLayer;
         [SerializeField] private int _damage = 1;
         [SerializeField] private float _speed = 3f;
-        
-        public BulletSpawnRequest CreateRequest(Vector2 position, Vector2 direction)
-        {
-            Vector2 velocity = direction.normalized * _speed;
-            return new BulletSpawnRequest(
-                position,
-                velocity,
-                _color,
-                _physicsLayer,
-                _damage,
-                _isPlayer
-            );
-        }
+
+        public bool IsPlayer => _isPlayer;
+        public Color Color => _color;
+        public int PhysicsLayer => _physicsLayer;
+        public int Damage => _damage;
+        public float Speed => _speed;
     }
 }

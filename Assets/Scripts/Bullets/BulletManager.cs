@@ -33,23 +33,13 @@ namespace ShootEmUp
 
         private void HandleFireRequest(FireRequest request)
         {
-            if (request.Requester == null)
-                return;
-
-            BulletConfig config = request.Requester.BulletConfig;
-            
-            if (config == null)
-                return;
-
-            BulletSpawnRequest spawnRequest = config.CreateRequest(request.Position, request.Direction);
-            
             SpawnBullet(
-                spawnRequest.Position,
-                spawnRequest.Velocity,
-                spawnRequest.Color,
-                spawnRequest.PhysicsLayer,
-                spawnRequest.Damage,
-                spawnRequest.IsPlayer
+                request.Position,
+                request.Velocity,
+                request.Color,
+                request.PhysicsLayer,
+                request.Damage,
+                request.IsPlayer
             );
         }
 

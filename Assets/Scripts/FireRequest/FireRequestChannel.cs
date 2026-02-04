@@ -1,5 +1,4 @@
 using System;
-using UnityEngine;
 
 namespace ShootEmUp
 {
@@ -7,9 +6,8 @@ namespace ShootEmUp
     {
         public static event Action<FireRequest> OnFireRequested;
 
-        public static void Raise(IBulletProvider requester, Vector2 position, Vector2 direction)
+        public static void Raise(FireRequest request)
         {
-            var request = new FireRequest(requester, position, direction);
             OnFireRequested?.Invoke(request);
         }
     }

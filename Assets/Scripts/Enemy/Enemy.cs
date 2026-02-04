@@ -4,7 +4,7 @@ namespace ShootEmUp
 {
     [RequireComponent(typeof(HealthComponent))]
     [RequireComponent(typeof(AttackComponent))]
-    public sealed class Enemy : MonoBehaviour, IPoolable, IBulletProvider
+    public sealed class Enemy : MonoBehaviour, IPoolable
     {
         [Space]
         [SerializeField] private HealthComponent _healthComponent;
@@ -17,7 +17,6 @@ namespace ShootEmUp
         [SerializeField] private BulletConfig _bulletConfig;
         
         public HealthComponent HealthComponent => _healthComponent;
-        public BulletConfig BulletConfig => _bulletConfig;
 
         private ITarget _target;
         private Vector2 destination;
@@ -97,7 +96,8 @@ namespace ShootEmUp
             Vector2 startPosition = _firePoint.position;
             Vector2 vector = _target.Position - startPosition;
             Vector2 direction = vector.normalized;
-            FireRequestChannel.Raise(this, startPosition, direction);
+            FireRequest request = FireRequest.Configure(_bulletConfig, startPosition, direction);
+            FireRequestChannel.Raise(request);
         }
     }
 }
