@@ -11,7 +11,7 @@ namespace ShootEmUp
         public int Damage { get; }
         public bool IsPlayer { get; }
 
-        public FireRequest(
+        private FireRequest(
             Vector2 position,
             Vector2 velocity,
             Color color,

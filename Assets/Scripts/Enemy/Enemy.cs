@@ -16,6 +16,8 @@ namespace ShootEmUp
         [SerializeField] private CharacterConfig _characterConfig;
         [SerializeField] private BulletConfig _bulletConfig;
 
+        private const float MinMagnitude = 0.25f;
+        
         public bool IsAlive => _healthComponent != null && _healthComponent.Health > 0;
 
         private ITarget _target;
@@ -42,7 +44,7 @@ namespace ShootEmUp
             else
             {
                 Vector2 vector = destination - (Vector2)transform.position;
-                if (vector.magnitude <= 0.25f)
+                if (vector.magnitude <= MinMagnitude)
                 {
                     isPointReached = true;
                     _attackComponent?.Reset();

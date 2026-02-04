@@ -14,8 +14,7 @@ namespace ShootEmUp
         
         private CharacterConfig _characterConfig;
         
-        [SerializeField, ReadOnly] 
-        private int _currentHealth;
+        [SerializeField, ReadOnly] private int _currentHealth;
 
         public void Init(CharacterConfig characterConfig)
         {
