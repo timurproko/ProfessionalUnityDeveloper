@@ -1,27 +1,21 @@
-using System;
 using UnityEngine;
 
 namespace ShootEmUp
 {
     public sealed class HealthComponent : MonoBehaviour
     {
-        public event Action OnHealthEmpty;
-        
         public bool IsPlayer => _characterConfig != null && _characterConfig.IsPlayer;
 
         public int Health
         {
             get => _currentHealth;
-            set
-            {
-                _currentHealth = value;
-                if (_currentHealth <= 0)
-                    OnHealthEmpty?.Invoke();
-            }
+            set => _currentHealth = value;
         }
         
         private CharacterConfig _characterConfig;
-        [SerializeField, ReadOnly] private int _currentHealth;
+        
+        [SerializeField, ReadOnly] 
+        private int _currentHealth;
 
         public void Init(CharacterConfig characterConfig)
         {

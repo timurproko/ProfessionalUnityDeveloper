@@ -10,6 +10,12 @@ namespace ShootEmUp
 
         private void Update()
         {
+            if (_character != null && !_character.IsAlive)
+            {
+                Time.timeScale = 0;
+                return;
+            }
+
             if (Input.GetKeyDown(KeyCode.Space))
                 _fireRequired = true;
 
@@ -36,7 +42,6 @@ namespace ShootEmUp
         public void Init(Player character)
         {
             _character = character;
-            _character.HealthComponent.OnHealthEmpty += () => Time.timeScale = 0;
         }
     }
 }

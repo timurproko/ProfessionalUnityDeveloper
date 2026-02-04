@@ -15,8 +15,8 @@ namespace ShootEmUp
         [Space]
         [SerializeField] private CharacterConfig _characterConfig;
         [SerializeField] private BulletConfig _bulletConfig;
-        
-        public HealthComponent HealthComponent => _healthComponent;
+
+        public bool IsAlive => _healthComponent != null && _healthComponent.Health > 0;
 
         private ITarget _target;
         private Vector2 destination;

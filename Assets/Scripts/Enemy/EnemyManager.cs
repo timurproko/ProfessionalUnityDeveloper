@@ -70,7 +70,7 @@ namespace ShootEmUp
         {
             foreach (Enemy enemy in _enemyPool.GetActiveSnapshot())
             {
-                if (enemy.HealthComponent.Health <= 0)
+                if (!enemy.IsAlive)
                 {
                     _enemyPool.Return(enemy);
                 }
