@@ -17,11 +17,9 @@ namespace ShootEmUp
 
         public HealthComponent HealthComponent => _healthComponent;
         public BulletConfig BulletConfig => _bulletConfig;
-        
+
         public Vector2 Position => transform.position;
-        public float Speed => _characterConfig.Speed;
         public bool IsAlive => _healthComponent != null && _healthComponent.Health > 0;
-        public Rigidbody2D Rigidbody => _rigidbody;
 
         private void Awake()
         {
@@ -36,6 +34,13 @@ namespace ShootEmUp
             Vector2 position = _firePoint.position;
             Vector2 direction = _firePoint.rotation * Vector3.up;
             FireRequestChannel.Raise(this, position, direction);
+        }
+
+        public void Move(Vector2 direction)
+        {
+            Vector2 moveStep = direction * Time.fixedDeltaTime * _characterConfig.Speed;
+            Vector2 targetPosition = _rigidbody.position + moveStep;
+            _rigidbody.MovePosition(targetPosition);
         }
     }
 }

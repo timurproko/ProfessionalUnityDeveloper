@@ -10,7 +10,8 @@ namespace ShootEmUp
 
         private void Update()
         {
-            if (Input.GetKeyDown(KeyCode.Space)) 
+            if (Input.GetKeyDown(KeyCode.Space))
+
                 _fireRequired = true;
 
             if (Input.GetKey(KeyCode.LeftArrow))
@@ -28,11 +29,9 @@ namespace ShootEmUp
                 _character.Fire();
                 _fireRequired = false;
             }
-            
-            Vector2 moveDirection = new Vector2(this._moveDirection, 0);
-            Vector2 moveStep = moveDirection * Time.fixedDeltaTime * _character.Speed;
-            Vector2 targetPosition = _character.Rigidbody.position + moveStep;
-            _character.Rigidbody.MovePosition(targetPosition);
+
+            Vector2 moveDirection = new Vector2(_moveDirection, 0);
+            _character.Move(moveDirection);
         }
 
         public void Init(Player character)
