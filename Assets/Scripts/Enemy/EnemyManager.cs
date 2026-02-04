@@ -58,7 +58,7 @@ namespace ShootEmUp
 
                     Transform attackPosition = RandomPoint(attackPositions);
                     enemy.SetDestination(attackPosition.position);
-                    enemy.Target = _target;
+                    enemy.SetTarget(_target);
 
                     totalSpawnedThisLevel++;
                     _totalSpawned++;
@@ -66,7 +66,7 @@ namespace ShootEmUp
             }
         }
 
-        private void FixedUpdate()
+        private void Update()
         {
             foreach (Enemy enemy in _enemyPool.GetActiveSnapshot())
             {

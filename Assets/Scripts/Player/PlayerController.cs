@@ -7,12 +7,6 @@ namespace ShootEmUp
         private Player _character;
         private bool _fireRequired;
         private float _moveDirection;
-        
-        public void Init(Player character)
-        {
-            _character = character;
-            _character.HealthComponent.OnHealthEmpty += _ => Time.timeScale = 0;
-        }
 
         private void Update()
         {
@@ -39,6 +33,12 @@ namespace ShootEmUp
             Vector2 moveStep = moveDirection * Time.fixedDeltaTime * _character.Speed;
             Vector2 targetPosition = _character.Rigidbody.position + moveStep;
             _character.Rigidbody.MovePosition(targetPosition);
+        }
+
+        public void Init(Player character)
+        {
+            _character = character;
+            _character.HealthComponent.OnHealthEmpty += _ => Time.timeScale = 0;
         }
     }
 }

@@ -7,8 +7,8 @@ namespace ShootEmUp
     {
         private const int PoolPrewarmCount = 10;
 
-        [SerializeField] public Bullet _prefab;
-        [SerializeField] public Transform _worldTransform;
+        [SerializeField] private Bullet _prefab;
+        [SerializeField] private Transform _worldTransform;
         [SerializeField] private LevelBounds _levelBounds;
         [SerializeField] private Transform _container;
 
@@ -53,7 +53,7 @@ namespace ShootEmUp
             );
         }
 
-        private void FixedUpdate()
+        private void Update()
         {
             IReadOnlyList<Bullet> activeBullets = bulletPool.GetActiveSnapshot();
             for (int i = 0; i < activeBullets.Count; i++)

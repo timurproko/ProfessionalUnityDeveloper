@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 
 namespace ShootEmUp
@@ -17,11 +16,10 @@ namespace ShootEmUp
         [SerializeField] private CharacterConfig _characterConfig;
         [SerializeField] private BulletConfig _bulletConfig;
         
-        [NonSerialized] public ITarget Target;
-        
         public HealthComponent HealthComponent => _healthComponent;
         public BulletConfig BulletConfig => _bulletConfig;
 
+        private ITarget _target;
         private Vector2 destination;
         private bool isPointReached;
 
@@ -36,50 +34,11 @@ namespace ShootEmUp
             _attackComponent.OnFireRequested -= HandleAttackRequested;
         }
 
-        public void Reset()
-        {
-            _attackComponent?.Reset();
-        }
-
-        void IPoolable.OnGet()
-        {
-            _healthComponent?.Init(_characterConfig);
-            _attackComponent?.Reset();
-        }
-
-        void IPoolable.OnReturn()
-        {
-            Target = null;
-            _attackComponent?.SetActive(false);
-            _attackComponent?.Reset();
-            isPointReached = false;
-        }
-
-        public void SetDestination(Vector2 endPoint)
-        {
-            destination = endPoint;
-            isPointReached = false;
-            _attackComponent?.SetActive(false);
-        }
-
-        private void HandleAttackRequested()
-        {
-            if (Target == null || !Target.IsAlive)
-                return;
-            if (_bulletConfig == null)
-                return;
-
-            Vector2 startPosition = _firePoint.position;
-            Vector2 vector = Target.Position - startPosition;
-            Vector2 direction = vector.normalized;
-            FireRequestChannel.Raise(this, startPosition, direction);
-        }
-
         private void FixedUpdate()
         {
             if (isPointReached)
             {
-                _attackComponent?.SetActive(Target != null && Target.IsAlive);
+                _attackComponent?.SetActive(_target != null && _target.IsAlive);
             }
             else
             {
@@ -95,6 +54,50 @@ namespace ShootEmUp
                 Vector2 nextPosition = _rigidbody.position + dir * _characterConfig.Speed;
                 _rigidbody.MovePosition(nextPosition);
             }
+        }
+
+        public void SetTarget(ITarget target)
+        {
+            _target = target;
+        }
+
+        public void SetDestination(Vector2 endPoint)
+        {
+            destination = endPoint;
+            isPointReached = false;
+            _attackComponent?.SetActive(false);
+        }
+
+        public void Reset()
+        {
+            _attackComponent?.Reset();
+        }
+
+        void IPoolable.OnGet()
+        {
+            _healthComponent?.Init(_characterConfig);
+            _attackComponent?.Reset();
+        }
+
+        void IPoolable.OnReturn()
+        {
+            _target = null;
+            _attackComponent?.SetActive(false);
+            _attackComponent?.Reset();
+            isPointReached = false;
+        }
+
+        private void HandleAttackRequested()
+        {
+            if (_target == null || !_target.IsAlive)
+                return;
+            if (_bulletConfig == null)
+                return;
+
+            Vector2 startPosition = _firePoint.position;
+            Vector2 vector = _target.Position - startPosition;
+            Vector2 direction = vector.normalized;
+            FireRequestChannel.Raise(this, startPosition, direction);
         }
     }
 }

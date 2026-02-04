@@ -48,14 +48,9 @@ namespace ShootEmUp
         [Serializable]
         public sealed class Params
         {
-            [SerializeField]
-            public float m_startPositionY;
-
-            [SerializeField]
-            public float m_endPositionY;
-
-            [SerializeField]
-            public float m_movingSpeedY;
+            [SerializeField] public float m_startPositionY;
+            [SerializeField] public float m_endPositionY;
+            [SerializeField] public float m_movingSpeedY;
         }
     }
 }
