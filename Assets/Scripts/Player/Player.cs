@@ -28,11 +28,10 @@ namespace ShootEmUp
         {
             if (_bulletConfig == null)
                 return;
-            
+
             Vector2 position = _firePoint.position;
             Vector2 direction = _firePoint.rotation * Vector3.up;
-            FireRequest request = FireRequest.Configure(_bulletConfig, position, direction);
-            FireRequestChannel.Raise(request);
+            FireRequestService.RequestFire(_bulletConfig, position, direction);
         }
 
         public void Move(Vector2 direction)

@@ -4,11 +4,13 @@ namespace ShootEmUp
 {
     [RequireComponent(typeof(HealthComponent))]
     [RequireComponent(typeof(AttackComponent))]
+    [RequireComponent(typeof(MovementComponent))]
     public sealed class Enemy : MonoBehaviour, IPoolable
     {
         [Space]
         [SerializeField] private HealthComponent _healthComponent;
         [SerializeField] private AttackComponent _attackComponent;
+        [SerializeField] private MovementComponent _moveCoponent;
         [Space]
         [SerializeField] private Transform _firePoint;
         [SerializeField] private Rigidbody2D _rigidbody;
@@ -16,62 +18,51 @@ namespace ShootEmUp
         [SerializeField] private CharacterConfig _characterConfig;
         [SerializeField] private BulletConfig _bulletConfig;
 
-        private const float MinMagnitude = 0.25f;
-        
         public bool IsAlive => _healthComponent != null && _healthComponent.Health > 0;
 
         private ITarget _target;
-        private Vector2 destination;
-        private bool isPointReached;
 
         private void Awake()
         {
             _healthComponent.Init(_characterConfig);
-            _attackComponent.OnFireRequested += HandleAttackRequested;
-        }
+            _attackComponent.Init(_bulletConfig, _firePoint);
+            _moveCoponent.Init(_characterConfig, _rigidbody);
 
-        private void FixedUpdate()
-        {
-            if (isPointReached)
-            {
-                _attackComponent?.SetActive(_target != null && _target.IsAlive);
-            }
-            else
-            {
-                Vector2 vector = destination - (Vector2)transform.position;
-                if (vector.magnitude <= MinMagnitude)
-                {
-                    isPointReached = true;
-                    _attackComponent?.Reset();
-                    return;
-                }
-
-                Vector2 dir = vector.normalized * Time.fixedDeltaTime;
-                Vector2 nextPosition = _rigidbody.position + dir * _characterConfig.Speed;
-                _rigidbody.MovePosition(nextPosition);
-            }
+            _moveCoponent.OnDestinationReached += OnDestinationReached;
         }
 
         private void OnDestroy()
         {
-            _attackComponent.OnFireRequested -= HandleAttackRequested;
+            if (_moveCoponent != null)
+                _moveCoponent.OnDestinationReached -= OnDestinationReached;
         }
 
-        public void Reset()
+        private void OnDestinationReached()
         {
             _attackComponent?.Reset();
+        }
+
+        private void FixedUpdate()
+        {
+            if (_moveCoponent.HasReachedDestination)
+                Attack();
         }
 
         public void SetTarget(ITarget target)
         {
             _target = target;
+            _attackComponent?.SetTarget(target);
         }
 
         public void SetDestination(Vector2 endPoint)
         {
-            destination = endPoint;
-            isPointReached = false;
-            _attackComponent?.SetActive(false);
+            _moveCoponent.SetDestination(endPoint);
+            _attackComponent?.SetCanFire(false);
+        }
+
+        private void Attack()
+        {
+            _attackComponent?.SetCanFire(_target != null && _target.IsAlive);
         }
 
         void IPoolable.OnGet()
@@ -83,23 +74,10 @@ namespace ShootEmUp
         void IPoolable.OnReturn()
         {
             _target = null;
-            _attackComponent?.SetActive(false);
+            _attackComponent?.SetTarget(null);
+            _attackComponent?.SetCanFire(false);
             _attackComponent?.Reset();
-            isPointReached = false;
-        }
-
-        private void HandleAttackRequested()
-        {
-            if (_target == null || !_target.IsAlive)
-                return;
-            if (_bulletConfig == null)
-                return;
-
-            Vector2 startPosition = _firePoint.position;
-            Vector2 vector = _target.Position - startPosition;
-            Vector2 direction = vector.normalized;
-            FireRequest request = FireRequest.Configure(_bulletConfig, startPosition, direction);
-            FireRequestChannel.Raise(request);
+            _moveCoponent?.Reset();
         }
     }
 }

@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 
 namespace ShootEmUp
@@ -7,32 +6,56 @@ namespace ShootEmUp
     {
         [SerializeField] private float _attackInterval = 1f;
 
-        public event Action OnFireRequested;
-        
-        private float currentTime;
-        private bool isActive;
+        private BulletConfig _bulletConfig;
+        private Transform _firePoint;
+        private ITarget _target;
+
+        public void Init(BulletConfig bulletConfig, Transform firePoint)
+        {
+            _bulletConfig = bulletConfig;
+            _firePoint = firePoint;
+        }
+
+        private float _currentTime;
+        private bool _isActive;
 
         private void FixedUpdate()
         {
-            if (!isActive)
+            if (!_isActive)
                 return;
 
-            currentTime -= Time.fixedDeltaTime;
-            if (currentTime <= 0f)
+            _currentTime -= Time.fixedDeltaTime;
+            if (_currentTime <= 0f)
             {
-                OnFireRequested?.Invoke();
-                currentTime += _attackInterval;
+                TryFire();
+                _currentTime += _attackInterval;
             }
         }
 
         public void Reset()
         {
-            currentTime = _attackInterval;
+            _currentTime = _attackInterval;
         }
 
-        public void SetActive(bool active)
+        public void SetTarget(ITarget target)
         {
-            isActive = active;
+            _target = target;
         }
+
+        public void SetCanFire(bool canFire)
+        {
+            _isActive = canFire;
+        }
+
+        private void TryFire()
+        {
+            if (_target == null || !_target.IsAlive || _bulletConfig == null || _firePoint == null)
+                return;
+
+            Vector2 position = _firePoint.position;
+            Vector2 direction = (_target.Position - position).normalized;
+            FireRequestService.RequestFire(_bulletConfig, position, direction);
+        }
+
     }
 }
