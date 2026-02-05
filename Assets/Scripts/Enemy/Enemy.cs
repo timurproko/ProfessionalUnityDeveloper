@@ -4,13 +4,13 @@ namespace ShootEmUp
 {
     [RequireComponent(typeof(HealthComponent))]
     [RequireComponent(typeof(AttackComponent))]
-    [RequireComponent(typeof(MovementComponent))]
+    [RequireComponent(typeof(EnemyMoveComponent))]
     public sealed class Enemy : MonoBehaviour, IPoolable
     {
         [Space]
         [SerializeField] private HealthComponent _healthComponent;
         [SerializeField] private AttackComponent _attackComponent;
-        [SerializeField] private MovementComponent _moveCoponent;
+        [SerializeField] private EnemyMoveComponent _moveCoponent;
         [Space]
         [SerializeField] private Transform _firePoint;
         [SerializeField] private Rigidbody2D _rigidbody;

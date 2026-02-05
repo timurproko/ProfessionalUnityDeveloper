@@ -37,8 +37,7 @@ namespace ShootEmUp
         public void Move(Vector2 direction)
         {
             Vector2 moveStep = direction * Time.fixedDeltaTime * _characterConfig.Speed;
-            Vector2 targetPosition = _rigidbody.position + moveStep;
-            _rigidbody.MovePosition(targetPosition);
+            _rigidbody.MovePosition(_rigidbody.position + moveStep);
         }
     }
 }

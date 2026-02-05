@@ -8,6 +8,11 @@ namespace ShootEmUp
         private bool _fireRequired;
         private float _moveDirection;
 
+        public void Init(Player character)
+        {
+            _character = character;
+        }
+
         private void Update()
         {
             if (_character != null && !_character.IsAlive)
@@ -37,11 +42,6 @@ namespace ShootEmUp
 
             Vector2 moveDirection = new Vector2(_moveDirection, 0);
             _character.Move(moveDirection);
-        }
-
-        public void Init(Player character)
-        {
-            _character = character;
         }
     }
 }

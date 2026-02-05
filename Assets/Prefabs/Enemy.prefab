@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 102605417607457000}
   - component: {fileID: 8920942286437506176}
   - component: {fileID: -1996649804710986659}
-  - component: {fileID: 7114096642669442386}
+  - component: {fileID: 2129866425723911984}
   m_Layer: 11
   m_Name: Enemy
   m_TagString: Untagged
@@ -174,7 +174,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _healthComponent: {fileID: 8920942286437506176}
   _attackComponent: {fileID: -1996649804710986659}
-  _moveCoponent: {fileID: 7114096642669442386}
+  _moveCoponent: {fileID: 2129866425723911984}
   _firePoint: {fileID: 3195880656587174614}
   _rigidbody: {fileID: 659620479434099170}
   _characterConfig: {fileID: 11400000, guid: 9ae2ffeaa969f754e8d50cfd9c2adb48, type: 2}
@@ -205,7 +205,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ShootEmUp.AttackCountdownComponent
   _attackInterval: 1
---- !u!114 &7114096642669442386
+--- !u!114 &2129866425723911984
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -214,9 +214,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 559606060570185700}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 59f869984148bbd47b6bf7bde2e4b888, type: 3}
+  m_Script: {fileID: 11500000, guid: ccd6bb3ebbd45034a8ded824d1557c27, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ShootEmUp.MovementComponent
+  m_EditorClassIdentifier: Assembly-CSharp::ShootEmUp.EnemyMoveComponent
 --- !u!1 &2239154907127902911
 GameObject:
   m_ObjectHideFlags: 0
