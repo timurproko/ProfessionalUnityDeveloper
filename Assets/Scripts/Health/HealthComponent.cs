@@ -19,7 +19,11 @@ namespace ShootEmUp
         public void Init(CharacterConfig characterConfig)
         {
             _characterConfig = characterConfig;
-            
+            Reset();
+        }
+
+        public void Reset()
+        {
             if (_characterConfig != null)
                 _currentHealth = _characterConfig.DefaultHealth;
         }

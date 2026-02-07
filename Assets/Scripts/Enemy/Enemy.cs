@@ -4,13 +4,15 @@ namespace ShootEmUp
 {
     [RequireComponent(typeof(HealthComponent))]
     [RequireComponent(typeof(AttackComponent))]
-    [RequireComponent(typeof(EnemyMoveComponent))]
+    [RequireComponent(typeof(MoveComponent))]
+    [RequireComponent(typeof(WaypointMoveComponent))]
     public sealed class Enemy : MonoBehaviour, IPoolable
     {
         [Space]
         [SerializeField] private HealthComponent _healthComponent;
         [SerializeField] private AttackComponent _attackComponent;
-        [SerializeField] private EnemyMoveComponent _moveCoponent;
+        [SerializeField] private MoveComponent _moveComponent;
+        [SerializeField] private WaypointMoveComponent _waypointMove;
         [Space]
         [SerializeField] private Transform _firePoint;
         [SerializeField] private Rigidbody2D _rigidbody;
@@ -20,64 +22,62 @@ namespace ShootEmUp
 
         public bool IsAlive => _healthComponent != null && _healthComponent.Health > 0;
 
-        private ITarget _target;
-
         private void Awake()
         {
-            _healthComponent.Init(_characterConfig);
-            _attackComponent.Init(_bulletConfig, _firePoint);
-            _moveCoponent.Init(_characterConfig, _rigidbody);
-
-            _moveCoponent.OnDestinationReached += OnDestinationReached;
+            _healthComponent?.Init(_characterConfig);
+            _attackComponent?.Init(_bulletConfig, _firePoint);
+            _moveComponent?.Init(_characterConfig, _rigidbody);
+            _waypointMove?.Init(_moveComponent);
+            
+            _waypointMove.OnDestinationReached += OnDestinationReached;
         }
 
         private void OnDestroy()
         {
-            if (_moveCoponent != null)
-                _moveCoponent.OnDestinationReached -= OnDestinationReached;
+            _waypointMove.OnDestinationReached -= OnDestinationReached;
         }
 
         private void OnDestinationReached()
         {
-            _attackComponent?.Reset();
+            _attackComponent?.ResetTimer();
         }
 
         private void FixedUpdate()
         {
-            if (_moveCoponent.HasReachedDestination)
+            if (_waypointMove.HasReachedDestination)
                 Attack();
         }
 
         public void SetTarget(ITarget target)
         {
-            _target = target;
             _attackComponent?.SetTarget(target);
         }
 
         public void SetDestination(Vector2 endPoint)
         {
-            _moveCoponent.SetDestination(endPoint);
-            _attackComponent?.SetCanFire(false);
+            _waypointMove?.SetDestination(endPoint);
         }
 
         private void Attack()
         {
-            _attackComponent?.SetCanFire(_target != null && _target.IsAlive);
+            _attackComponent?.SetCanFire(_attackComponent.HasValidTarget);
         }
 
         void IPoolable.OnGet()
         {
-            _healthComponent?.Init(_characterConfig);
-            _attackComponent?.Reset();
+            Reset();
         }
 
         void IPoolable.OnReturn()
         {
-            _target = null;
-            _attackComponent?.SetTarget(null);
-            _attackComponent?.SetCanFire(false);
+            Reset();
+        }
+
+        private void Reset()
+        {
+            _healthComponent?.Reset();
             _attackComponent?.Reset();
-            _moveCoponent?.Reset();
+            _waypointMove?.Reset();
         }
     }
 }

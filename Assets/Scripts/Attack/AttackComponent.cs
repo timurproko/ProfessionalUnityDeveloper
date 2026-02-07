@@ -34,8 +34,17 @@ namespace ShootEmUp
 
         public void Reset()
         {
+            _target = null;
+            _isActive = false;
             _currentTime = _attackInterval;
         }
+
+        public void ResetTimer()
+        {
+            _currentTime = _attackInterval;
+        }
+
+        public bool HasValidTarget => _target != null && _target.IsAlive;
 
         public void SetTarget(ITarget target)
         {

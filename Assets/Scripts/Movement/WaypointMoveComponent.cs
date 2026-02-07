@@ -3,24 +3,22 @@ using UnityEngine;
 
 namespace ShootEmUp
 {
-    public sealed class EnemyMoveComponent : MonoBehaviour
+    [RequireComponent(typeof(MoveComponent))]
+    public sealed class WaypointMoveComponent : MonoBehaviour
     {
         private const float ArrivalThreshold = 0.25f;
 
         public event Action OnDestinationReached;
         public bool HasReachedDestination => _hasReached;
 
-        private CharacterConfig _characterConfig;
-        private Rigidbody2D _rigidbody;
+        private MoveComponent _move;
         private Vector2? _destination;
         private bool _hasReached;
 
-        public void Init(CharacterConfig characterConfig, Rigidbody2D rigidbody)
+        public void Init(MoveComponent move)
         {
-            _characterConfig = characterConfig;
-            _rigidbody = rigidbody;
+            _move = move;
         }
-
 
         public void SetDestination(Vector2 destination)
         {
@@ -48,13 +46,7 @@ namespace ShootEmUp
                 return;
             }
 
-            Move(vector.normalized);
-        }
-
-        private void Move(Vector2 direction)
-        {
-            Vector2 moveStep = direction * Time.fixedDeltaTime * _characterConfig.Speed;
-            _rigidbody.MovePosition(_rigidbody.position + moveStep);
+            _move.Move(vector.normalized);
         }
     }
 }
