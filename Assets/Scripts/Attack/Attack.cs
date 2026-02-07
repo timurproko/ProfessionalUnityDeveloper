@@ -2,19 +2,19 @@ using UnityEngine;
 
 namespace ShootEmUp
 {
-    public sealed class AttackComponent : MonoBehaviour
+    public sealed class Attack
     {
-        private BulletConfig _bulletConfig;
-        private Transform _firePoint;
+        private readonly BulletConfig _bulletConfig;
+        private readonly Transform _firePoint;
         private ITarget _target;
 
-        public bool HasTarget => _target != null && _target.IsAlive;
-
-        public void Init(BulletConfig bulletConfig, Transform firePoint)
+        public Attack(BulletConfig bulletConfig, Transform firePoint)
         {
             _bulletConfig = bulletConfig;
             _firePoint = firePoint;
         }
+
+        public bool HasTarget => _target != null && _target.IsAlive;
 
         public void SetTarget(ITarget target)
         {
@@ -29,7 +29,7 @@ namespace ShootEmUp
             Vector2 position = _firePoint.position;
             Vector2 direction = _target != null && _target.IsAlive
                 ? (_target.Position - position).normalized
-                : (Vector2)(_firePoint.rotation * Vector3.up);
+                : _firePoint.rotation * Vector3.up;
 
             FireRequestService.RequestFire(_bulletConfig, position, direction);
         }

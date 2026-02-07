@@ -13,11 +13,6 @@ GameObject:
   - component: {fileID: 5568771391735819375}
   - component: {fileID: 659620479434099170}
   - component: {fileID: 102605417607457000}
-  - component: {fileID: 8920942286437506176}
-  - component: {fileID: -1996649804710986659}
-  - component: {fileID: 483759893215719942}
-  - component: {fileID: 7959733054879302631}
-  - component: {fileID: 3289677931224950834}
   m_Layer: 11
   m_Name: Enemy
   m_TagString: Untagged
@@ -174,77 +169,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e09a324f54d94d6e84681731f36566c4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _healthComponent: {fileID: 8920942286437506176}
-  _attackComponent: {fileID: -1996649804710986659}
-  _timedAttack: {fileID: 483759893215719942}
-  _moveComponent: {fileID: 7959733054879302631}
-  _waypointMove: {fileID: 3289677931224950834}
   _firePoint: {fileID: 3195880656587174614}
   _rigidbody: {fileID: 659620479434099170}
   _characterConfig: {fileID: 11400000, guid: 9ae2ffeaa969f754e8d50cfd9c2adb48, type: 2}
   _bulletConfig: {fileID: 11400000, guid: a4a66565b2ed66f498dbaca12dc2c159, type: 2}
---- !u!114 &8920942286437506176
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 559606060570185700}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3cce6ee563be4687ae94c8dffeee6b3c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ShootEmUp.HealthComponent
-  _currentHealth: 0
---- !u!114 &-1996649804710986659
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 559606060570185700}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6d58a2d91350c414e8fba2732b610e4b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ShootEmUp.AttackCountdownComponent
---- !u!114 &483759893215719942
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 559606060570185700}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c5c16129fb4d5e543bc140a4f38a4d28, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ShootEmUp.TimedAttackComponent
   _attackInterval: 1
---- !u!114 &7959733054879302631
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 559606060570185700}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e75f87403d65e184b8c106777293bef9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ShootEmUp.MoveComponent
---- !u!114 &3289677931224950834
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 559606060570185700}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0354c6bef5815ff458701e7e27f10cd9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ShootEmUp.WaypointMoveComponent
 --- !u!1 &2239154907127902911
 GameObject:
   m_ObjectHideFlags: 0

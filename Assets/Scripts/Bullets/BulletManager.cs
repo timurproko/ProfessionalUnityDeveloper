@@ -82,12 +82,12 @@ namespace ShootEmUp
             if (damage <= 0)
                 return;
 
-            if (!other.TryGetComponent(out HealthComponent health) || bullet.IsPlayer == health.IsPlayer)
+            if (!other.TryGetComponent(out IDamageable target) || bullet.IsPlayer == target.IsPlayer)
                 return;
-            if (health.Health <= 0)
+            if (target.Health <= 0)
                 return;
 
-            health.Health = Mathf.Max(0, health.Health - damage);
+            target.Health = Mathf.Max(0, target.Health - damage);
         }
 
         private void ReturnBullet(Bullet bullet)

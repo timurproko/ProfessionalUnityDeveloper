@@ -2,15 +2,9 @@ using UnityEngine;
 
 namespace ShootEmUp
 {
-    [RequireComponent(typeof(HealthComponent))]
-    [RequireComponent(typeof(AttackComponent))]
-    [RequireComponent(typeof(MoveComponent))]
-    public sealed class Player : MonoBehaviour, ITarget
+    public sealed class Player : MonoBehaviour, ITarget, IDamageable
     {
         [Space]
-        [SerializeField] private HealthComponent _healthComponent;
-        [SerializeField] private AttackComponent _attackComponent;
-        [SerializeField] private MoveComponent _moveComponent;
         [SerializeField] private PlayerController _playerController;
         [Space]
         [SerializeField] private Transform _firePoint;
@@ -19,25 +13,38 @@ namespace ShootEmUp
         [SerializeField] private CharacterConfig _characterConfig;
         [SerializeField] private BulletConfig _bulletConfig;
 
+        private Health _health;
+        private Move _move;
+        private Attack _attack;
+
         public Vector2 Position => transform.position;
-        public bool IsAlive => _healthComponent != null && _healthComponent.Health > 0;
+        public bool IsAlive => _health != null && _health.CurrentHealth > 0;
+
+        public int Health
+        {
+            get => _health?.CurrentHealth ?? 0;
+            set { if (_health != null) _health.CurrentHealth = value; }
+        }
+
+        public bool IsPlayer => _health != null && _health.IsPlayer;
 
         private void Awake()
         {
-            _healthComponent?.Init(_characterConfig);
-            _attackComponent?.Init(_bulletConfig, _firePoint);
-            _moveComponent?.Init(_characterConfig, _rigidbody);
+            _health = new Health(_characterConfig);
+            _move = new Move(_characterConfig, _rigidbody);
+            _attack = new Attack(_bulletConfig, _firePoint);
+            
             _playerController?.Init(this);
         }
 
         public void Fire()
         {
-            _attackComponent?.Fire();
+            _attack?.Fire();
         }
 
         public void Move(Vector2 direction)
         {
-            _moveComponent?.Move(direction);
+            _move?.MoveToward(direction, Time.fixedDeltaTime);
         }
     }
 }
