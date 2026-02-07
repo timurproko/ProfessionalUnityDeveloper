@@ -43,12 +43,8 @@ namespace ShootEmUp
             if (_controller.ConsumeFire())
                 _attack?.Fire();
 
-            Move(_controller.MoveDirection);
-        }
-
-        private void Move(float direction)
-        {
-            _move?.MoveToward(new Vector2(direction, 0), Time.fixedDeltaTime);
+            var moveDirection = _controller.MoveDirection;
+            _move?.MoveToward(moveDirection, Time.fixedDeltaTime);
         }
     }
 }

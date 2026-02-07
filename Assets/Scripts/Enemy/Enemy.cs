@@ -12,13 +12,13 @@ namespace ShootEmUp
         [Space]
         [SerializeField] private float _attackInterval = 1f;
 
-        private Health _health;
-        private TimedAttack _timedAttack;
-        private WaypointMove _waypointMove;
-
         public bool IsPlayer => _characterConfig.IsPlayer;
         public bool IsAlive => _health != null && _health.CurrentHealth > 0;
         public int Health { get => _health.CurrentHealth; set => _health.CurrentHealth = value; }
+        
+        private Health _health;
+        private TimedAttack _timedAttack;
+        private WaypointMove _waypointMove;
 
         private void Awake()
         {

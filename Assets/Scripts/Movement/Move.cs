@@ -13,6 +13,11 @@ namespace ShootEmUp
             _rigidbody = rigidbody;
         }
 
+        public void MoveToward(float direction, float deltaTime)
+        {
+            MoveToward(new Vector2(direction, 0f), deltaTime);
+        }
+
         public void MoveToward(Vector2 direction, float deltaTime)
         {
             if (_rigidbody == null || _config == null)
