@@ -1181,17 +1181,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Player
       objectReference: {fileID: 0}
-    - target: {fileID: 6610591536227522620, guid: 9699e7e809fd44b2bbf3d30c951ecbd2,
-        type: 3}
-      propertyPath: _bulletManager
-      value: 
-      objectReference: {fileID: 363245577}
-    - target: {fileID: 6799125967610205483, guid: 9699e7e809fd44b2bbf3d30c951ecbd2,
-        type: 3}
-      propertyPath: _fireRequestChannel
-      value: 
-      objectReference: {fileID: 11400000, guid: a4e7ea314bbc85f4f8c72ab9050b1a2b,
-        type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

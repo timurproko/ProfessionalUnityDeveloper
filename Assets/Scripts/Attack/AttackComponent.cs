@@ -4,11 +4,11 @@ namespace ShootEmUp
 {
     public sealed class AttackComponent : MonoBehaviour
     {
-        [SerializeField] private float _attackInterval = 1f;
-
         private BulletConfig _bulletConfig;
         private Transform _firePoint;
         private ITarget _target;
+
+        public bool HasTarget => _target != null && _target.IsAlive;
 
         public void Init(BulletConfig bulletConfig, Transform firePoint)
         {
@@ -16,55 +16,27 @@ namespace ShootEmUp
             _firePoint = firePoint;
         }
 
-        private float _currentTime;
-        private bool _isActive;
-
-        private void FixedUpdate()
-        {
-            if (!_isActive)
-                return;
-
-            _currentTime -= Time.fixedDeltaTime;
-            if (_currentTime <= 0f)
-            {
-                TryFire();
-                _currentTime += _attackInterval;
-            }
-        }
-
-        public void Reset()
-        {
-            _target = null;
-            _isActive = false;
-            _currentTime = _attackInterval;
-        }
-
-        public void ResetTimer()
-        {
-            _currentTime = _attackInterval;
-        }
-
-        public bool HasValidTarget => _target != null && _target.IsAlive;
-
         public void SetTarget(ITarget target)
         {
             _target = target;
         }
 
-        public void SetCanFire(bool canFire)
+        public void Fire()
         {
-            _isActive = canFire;
-        }
-
-        private void TryFire()
-        {
-            if (_target == null || !_target.IsAlive || _bulletConfig == null || _firePoint == null)
+            if (_bulletConfig == null || _firePoint == null)
                 return;
 
             Vector2 position = _firePoint.position;
-            Vector2 direction = (_target.Position - position).normalized;
+            Vector2 direction = _target != null && _target.IsAlive
+                ? (_target.Position - position).normalized
+                : (Vector2)(_firePoint.rotation * Vector3.up);
+
             FireRequestService.RequestFire(_bulletConfig, position, direction);
         }
 
+        public void Reset()
+        {
+            _target = null;
+        }
     }
 }

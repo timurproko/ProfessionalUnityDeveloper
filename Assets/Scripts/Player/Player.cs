@@ -3,13 +3,15 @@ using UnityEngine;
 namespace ShootEmUp
 {
     [RequireComponent(typeof(HealthComponent))]
+    [RequireComponent(typeof(AttackComponent))]
     [RequireComponent(typeof(MoveComponent))]
     public sealed class Player : MonoBehaviour, ITarget
     {
         [Space]
-        [SerializeField] private PlayerController _playerController;
         [SerializeField] private HealthComponent _healthComponent;
+        [SerializeField] private AttackComponent _attackComponent;
         [SerializeField] private MoveComponent _moveComponent;
+        [SerializeField] private PlayerController _playerController;
         [Space]
         [SerializeField] private Transform _firePoint;
         [SerializeField] private Rigidbody2D _rigidbody;
@@ -23,18 +25,14 @@ namespace ShootEmUp
         private void Awake()
         {
             _healthComponent?.Init(_characterConfig);
+            _attackComponent?.Init(_bulletConfig, _firePoint);
             _moveComponent?.Init(_characterConfig, _rigidbody);
             _playerController?.Init(this);
         }
 
         public void Fire()
         {
-            if (_bulletConfig == null)
-                return;
-
-            Vector2 position = _firePoint.position;
-            Vector2 direction = _firePoint.rotation * Vector3.up;
-            FireRequestService.RequestFire(_bulletConfig, position, direction);
+            _attackComponent?.Fire();
         }
 
         public void Move(Vector2 direction)

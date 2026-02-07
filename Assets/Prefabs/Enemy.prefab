@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 102605417607457000}
   - component: {fileID: 8920942286437506176}
   - component: {fileID: -1996649804710986659}
+  - component: {fileID: 483759893215719942}
   - component: {fileID: 7959733054879302631}
   - component: {fileID: 3289677931224950834}
   m_Layer: 11
@@ -175,6 +176,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _healthComponent: {fileID: 8920942286437506176}
   _attackComponent: {fileID: -1996649804710986659}
+  _timedAttack: {fileID: 483759893215719942}
   _moveComponent: {fileID: 7959733054879302631}
   _waypointMove: {fileID: 3289677931224950834}
   _firePoint: {fileID: 3195880656587174614}
@@ -206,6 +208,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6d58a2d91350c414e8fba2732b610e4b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ShootEmUp.AttackCountdownComponent
+--- !u!114 &483759893215719942
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 559606060570185700}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c5c16129fb4d5e543bc140a4f38a4d28, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ShootEmUp.TimedAttackComponent
   _attackInterval: 1
 --- !u!114 &7959733054879302631
 MonoBehaviour:

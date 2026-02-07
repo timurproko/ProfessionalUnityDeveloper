@@ -8,7 +8,6 @@ namespace ShootEmUp
     {
         private const float ArrivalThreshold = 0.25f;
 
-        public event Action OnDestinationReached;
         public bool HasReachedDestination => _hasReached;
 
         private MoveComponent _moveComponent;
@@ -42,7 +41,6 @@ namespace ShootEmUp
             {
                 _hasReached = true;
                 _destination = null;
-                OnDestinationReached?.Invoke();
                 return;
             }
 
