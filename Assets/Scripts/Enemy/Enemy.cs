@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace ShootEmUp
@@ -37,7 +38,7 @@ namespace ShootEmUp
             _timedAttack.Tick(Time.fixedDeltaTime);
         }
 
-        public void SetTarget(Transform aimAt, System.Func<bool> isAlive)
+        public void SetTarget(Transform aimAt, Func<bool> isAlive)
         {
             _timedAttack.SetTarget(aimAt, isAlive);
         }
