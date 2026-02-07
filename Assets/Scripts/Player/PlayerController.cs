@@ -2,25 +2,13 @@ using UnityEngine;
 
 namespace ShootEmUp
 {
-    public sealed class PlayerController : MonoBehaviour
+    public sealed class PlayerController
     {
-        private Player _character;
         private bool _fireRequired;
         private float _moveDirection;
 
-        public void Init(Player character)
+        public void ReadInput()
         {
-            _character = character;
-        }
-
-        private void Update()
-        {
-            if (_character != null && !_character.IsAlive)
-            {
-                Time.timeScale = 0;
-                return;
-            }
-
             if (Input.GetKeyDown(KeyCode.Space))
                 _fireRequired = true;
 
@@ -32,16 +20,13 @@ namespace ShootEmUp
                 _moveDirection = 0;
         }
 
-        private void FixedUpdate()
+        public bool ConsumeFire()
         {
-            if (_fireRequired)
-            {
-                _character.Fire();
-                _fireRequired = false;
-            }
-
-            Vector2 moveDirection = new Vector2(_moveDirection, 0);
-            _character.Move(moveDirection);
+            bool v = _fireRequired;
+            _fireRequired = false;
+            return v;
         }
+
+        public float MoveDirection => _moveDirection;
     }
 }
