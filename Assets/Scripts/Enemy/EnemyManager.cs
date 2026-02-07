@@ -81,7 +81,7 @@ namespace ShootEmUp
 
             enemy.transform.position = RandomPoint(spawnPositions).position;
             enemy.SetDestination(attackPositions[attackIndex].position);
-            enemy.SetTarget(_target);
+            enemy.SetTarget(_target.transform, () => _target.IsAlive);
 
             _enemyToAttackIndex[enemy] = attackIndex;
             _occupiedAttackSlots[attackIndex] = true;

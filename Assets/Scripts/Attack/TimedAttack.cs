@@ -18,9 +18,9 @@ namespace ShootEmUp
             _currentTime = interval;
         }
 
-        public void SetTarget(ITarget target)
+        public void SetTarget(Transform aimAt, System.Func<bool> isAlive)
         {
-            _attack.SetTarget(target);
+            _attack.SetTarget(aimAt, isAlive);
         }
 
         public void SetEnabled(bool enabled)

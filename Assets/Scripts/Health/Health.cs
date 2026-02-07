@@ -13,8 +13,6 @@ namespace ShootEmUp
             _currentHealth = config != null ? config.DefaultHealth : 0;
         }
 
-        public bool IsPlayer => _config != null && _config.IsPlayer;
-
         public int CurrentHealth
         {
             get => _currentHealth;

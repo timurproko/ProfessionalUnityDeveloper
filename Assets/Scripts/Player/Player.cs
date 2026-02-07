@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace ShootEmUp
 {
-    public sealed class Player : MonoBehaviour, ITarget, IDamageable
+    public sealed class Player : MonoBehaviour, IDamageable
     {
         [Space]
         [SerializeField] private PlayerController _playerController;
@@ -13,21 +13,14 @@ namespace ShootEmUp
         [SerializeField] private CharacterConfig _characterConfig;
         [SerializeField] private BulletConfig _bulletConfig;
 
+        public bool IsPlayer => _characterConfig != null && _characterConfig.IsPlayer;
+        public bool IsAlive => _health != null && _health.CurrentHealth > 0;
+        public int Health { get => _health.CurrentHealth; set => _health.CurrentHealth = value; }
+
         private Health _health;
         private Move _move;
         private Attack _attack;
-
-        public Vector2 Position => transform.position;
-        public bool IsAlive => _health != null && _health.CurrentHealth > 0;
-
-        public int Health
-        {
-            get => _health?.CurrentHealth ?? 0;
-            set { if (_health != null) _health.CurrentHealth = value; }
-        }
-
-        public bool IsPlayer => _health != null && _health.IsPlayer;
-
+        
         private void Awake()
         {
             _health = new Health(_characterConfig);

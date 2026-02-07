@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace ShootEmUp
@@ -6,7 +7,8 @@ namespace ShootEmUp
     {
         private readonly BulletConfig _bulletConfig;
         private readonly Transform _firePoint;
-        private ITarget _target;
+        private Transform _aimAt;
+        private Func<bool> _isAlive;
 
         public Attack(BulletConfig bulletConfig, Transform firePoint)
         {
@@ -14,11 +16,12 @@ namespace ShootEmUp
             _firePoint = firePoint;
         }
 
-        public bool HasTarget => _target != null && _target.IsAlive;
+        public bool HasTarget => _aimAt != null && (_isAlive?.Invoke() ?? false);
 
-        public void SetTarget(ITarget target)
+        public void SetTarget(Transform aimAt, Func<bool> isAlive)
         {
-            _target = target;
+            _aimAt = aimAt;
+            _isAlive = isAlive;
         }
 
         public void Fire()
@@ -27,16 +30,17 @@ namespace ShootEmUp
                 return;
 
             Vector2 position = _firePoint.position;
-            Vector2 direction = _target != null && _target.IsAlive
-                ? (_target.Position - position).normalized
-                : _firePoint.rotation * Vector3.up;
+            Vector2 direction = HasTarget
+                ? ((Vector2)_aimAt.position - position).normalized
+                : (Vector2)(_firePoint.rotation * Vector3.up);
 
             FireRequestService.RequestFire(_bulletConfig, position, direction);
         }
 
         public void Reset()
         {
-            _target = null;
+            _aimAt = null;
+            _isAlive = null;
         }
     }
 }

@@ -17,15 +17,9 @@ namespace ShootEmUp
         private TimedAttack _timedAttack;
         private WaypointMove _waypointMove;
 
+        public bool IsPlayer => _characterConfig.IsPlayer;
         public bool IsAlive => _health != null && _health.CurrentHealth > 0;
-
-        public int Health
-        {
-            get => _health?.CurrentHealth ?? 0;
-            set { if (_health != null) _health.CurrentHealth = value; }
-        }
-
-        public bool IsPlayer => _health != null && _health.IsPlayer;
+        public int Health { get => _health.CurrentHealth; set => _health.CurrentHealth = value; }
 
         private void Awake()
         {
@@ -44,9 +38,9 @@ namespace ShootEmUp
             _timedAttack.Tick(Time.fixedDeltaTime);
         }
 
-        public void SetTarget(ITarget target)
+        public void SetTarget(Transform aimAt, System.Func<bool> isAlive)
         {
-            _timedAttack.SetTarget(target);
+            _timedAttack.SetTarget(aimAt, isAlive);
         }
 
         public void SetDestination(Vector2 endPoint)
