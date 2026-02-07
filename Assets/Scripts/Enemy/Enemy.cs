@@ -4,7 +4,6 @@ namespace ShootEmUp
 {
     public sealed class Enemy : MonoBehaviour, IPoolable, IDamageable
     {
-        [Space]
         [SerializeField] private Transform _firePoint;
         [SerializeField] private Rigidbody2D _rigidbody;
         [Space]
@@ -50,15 +49,15 @@ namespace ShootEmUp
 
         void IPoolable.OnGet()
         {
-            Reset();
+            ResetAllComponents();
         }
 
         void IPoolable.OnReturn()
         {
-            Reset();
+            ResetAllComponents();
         }
 
-        private void Reset()
+        private void ResetAllComponents()
         {
             _health?.Reset();
             _timedAttack?.Reset();
