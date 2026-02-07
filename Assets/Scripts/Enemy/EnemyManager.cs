@@ -13,7 +13,7 @@ namespace ShootEmUp
         [SerializeField] private Transform _worldTransform;
         [SerializeField] private Transform _container;
         [SerializeField] private Enemy _prefab;
-        [SerializeField] private LevelsConfig _levelsConfig;
+        [SerializeField] private LevelConfig _levelConfig;
 
         private const int PoolPrewarmCount = 5;
         private const float SpawnDelayMin = 1f;
@@ -23,12 +23,8 @@ namespace ShootEmUp
         private bool[] _occupiedAttackSlots;
 
         private ObjectPool<Enemy> _enemyPool;
-        private int _currentLevelIndex;
-        private int _totalSpawnedThisLevel;
+        private int _totalSpawned;
         private float _nextSpawnTime;
-
-        [Header("Debug")]
-        [SerializeField, ReadOnly] private int _totalSpawned;
 
         private void Awake()
         {
@@ -40,27 +36,8 @@ namespace ShootEmUp
         {
             ReturnDeadEnemies();
 
-            if (TryAdvanceLevel())
-                return;
-
             if (TrySpawnEnemy())
                 _nextSpawnTime = Time.time + Random.Range(SpawnDelayMin, SpawnDelayMax);
-        }
-
-        private bool TryAdvanceLevel()
-        {
-            if (!TryGetCurrentLevel(out var level))
-                return false;
-
-            bool spawnedAll = _totalSpawnedThisLevel >= level.TotalEnemiesToSpawn;
-            bool allDead = _enemyPool.ActiveCount == 0;
-
-            if (!spawnedAll || !allDead)
-                return false;
-
-            _currentLevelIndex++;
-            _totalSpawnedThisLevel = 0;
-            return true;
         }
 
         private void ReturnDeadEnemies()
@@ -82,37 +59,20 @@ namespace ShootEmUp
 
         private bool TrySpawnEnemy()
         {
-            if (!TryGetCurrentLevel(out var level))
+            if (_levelConfig == null)
                 return false;
-
             if (Time.time < _nextSpawnTime)
                 return false;
-
-            if (_totalSpawnedThisLevel >= level.TotalEnemiesToSpawn)
+            if (_totalSpawned >= _levelConfig.TotalEnemiesToSpawn)
                 return false;
-
-            if (_enemyPool.ActiveCount >= level.MaxEnemiesPerWave)
+            if (_enemyPool.ActiveCount >= _levelConfig.MaxEnemiesPerWave)
                 return false;
-
             if (!TryPickFreeAttackSlot(out int attackIndex))
                 return false;
 
             SpawnEnemy(attackIndex);
-            _totalSpawnedThisLevel++;
             _totalSpawned++;
             return true;
-        }
-
-        private bool TryGetCurrentLevel(out LevelConfig level)
-        {
-            level = null;
-            if (_levelsConfig == null || _levelsConfig.LevelCount == 0)
-                return false;
-            if (_currentLevelIndex >= _levelsConfig.LevelCount)
-                return false;
-
-            level = _levelsConfig.GetLevel(_currentLevelIndex);
-            return level != null;
         }
 
         private void SpawnEnemy(int attackIndex)

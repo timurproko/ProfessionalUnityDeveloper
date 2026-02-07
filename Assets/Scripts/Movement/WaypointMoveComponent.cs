@@ -11,13 +11,13 @@ namespace ShootEmUp
         public event Action OnDestinationReached;
         public bool HasReachedDestination => _hasReached;
 
-        private MoveComponent _move;
+        private MoveComponent _moveComponent;
         private Vector2? _destination;
         private bool _hasReached;
 
-        public void Init(MoveComponent move)
+        public void Init(MoveComponent moveComponent)
         {
-            _move = move;
+            _moveComponent = moveComponent;
         }
 
         public void SetDestination(Vector2 destination)
@@ -46,7 +46,7 @@ namespace ShootEmUp
                 return;
             }
 
-            _move.Move(vector.normalized);
+            _moveComponent.Move(vector.normalized);
         }
     }
 }

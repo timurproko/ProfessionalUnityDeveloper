@@ -421,8 +421,7 @@ MonoBehaviour:
   _worldTransform: {fileID: 1683128698}
   _container: {fileID: 178513672}
   _prefab: {fileID: 102605417607457000, guid: 87fe189881a524806800482ac8eaaa83, type: 3}
-  _levelsConfig: {fileID: 11400000, guid: 9815c8353182d0f47b91fd5cf2fd8a3b, type: 2}
-  _totalSpawned: 0
+  _levelConfig: {fileID: 11400000, guid: ce553ef698db9784a8e717ef76ba3906, type: 2}
 --- !u!1 &883274639
 GameObject:
   m_ObjectHideFlags: 0
@@ -1187,11 +1186,6 @@ PrefabInstance:
       propertyPath: _bulletManager
       value: 
       objectReference: {fileID: 363245577}
-    - target: {fileID: 6799125967610205483, guid: 9699e7e809fd44b2bbf3d30c951ecbd2,
-        type: 3}
-      propertyPath: _moveComponent
-      value: 
-      objectReference: {fileID: 0}
     - target: {fileID: 6799125967610205483, guid: 9699e7e809fd44b2bbf3d30c951ecbd2,
         type: 3}
       propertyPath: _fireRequestChannel
